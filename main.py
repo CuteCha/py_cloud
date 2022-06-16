@@ -336,13 +336,14 @@ def test8():
 
     X_no_shift = 1.0 / N * np.fft.fft(x, N)
 
-    phases = np.arctan2(np.imag(X), np.real(X)) * 180 / np.pi
+    # phases = np.arctan2(np.imag(X), np.real(X)) * 180 / np.pi
+    phases = np.angle(X)
 
     X_backup = np.copy(X)
     threshold = np.max(np.abs(X)) / 1000.0
     X_backup[X_backup < threshold] = 0.0
-
-    phases_cut = np.arctan2(np.imag(X_backup), np.real(X_backup)) * 180 / np.pi  # 虚部除以实部得到相位谱，返回值是弧度
+    # phases_cut = np.arctan2(np.imag(X_backup), np.real(X_backup)) * 180 / np.pi  # 虚部除以实部得到相位谱，返回值是弧度
+    phases_cut = np.angle(X_backup)
 
     plt.figure(figsize=(16, 8))
 
