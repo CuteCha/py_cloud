@@ -319,69 +319,88 @@ def test7():
 
 
 def test8():
+    '''
+    np.fft.fft --> X[k]=\sum_{n=0}^{N-1}x[n]e^{-i\frac{2\pi}{N}kn}
+    np.fft.ifft --> x[n]=\sum_{k=0}^{N-1}X[k]e^{i\frac{2\pi}{N}kn} / N
+    '''
     A = 0.2
     fc = 10
     phase = np.pi / 6.0
     fs = 32 * fc
 
     t = np.arange(0, 2, 1.0 / fs)  # 2 seconds of sampling time
-    x = A * np.sin(2 * np.pi * fc * t + phase)
+    x = A * np.sin(2 * np.pi * fc * t + phase)  # 0.2cos(2pi*10t-pi/3)
 
     N = 256  # N 点傅里叶变换
-    X = 1.0 / N * np.fft.fftshift(np.fft.fft(x, N))
-    f = np.arange(N) * fs * 1.0 / N
+    X = np.fft.fftshift(np.fft.fft(x, N))
+    f = np.arange(N) * fs / N
 
     freq = f - fs / 2
     # freq = np.fft.fftfreq(t.shape[-1])
 
-    X_no_shift = 1.0 / N * np.fft.fft(x, N)
+    X_no_shift = np.fft.fft(x, N)
 
-    # phases = np.arctan2(np.imag(X), np.real(X)) * 180 / np.pi
     phases = np.angle(X)
 
     X_backup = np.copy(X)
     threshold = np.max(np.abs(X)) / 1000.0
     X_backup[X_backup < threshold] = 0.0
-    # phases_cut = np.arctan2(np.imag(X_backup), np.real(X_backup)) * 180 / np.pi  # 虚部除以实部得到相位谱，返回值是弧度
     phases_cut = np.angle(X_backup)
 
-    plt.figure(figsize=(16, 8))
+    x_recon = np.fft.ifft(np.fft.ifftshift(X))
+    t_recon = np.arange(0, len(x_recon)) / fs
 
-    plt.subplot(511)
+    plt.figure(figsize=(16, 24))
+
+    plt.subplot(611)
     plt.plot(t, x, 'b-')
+    plt.plot(t_recon, np.real(x_recon), 'r-')
     plt.xlabel("t(s)")
     plt.ylabel("Amplitude")
     plt.title("Signal")
     plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
 
-    plt.subplot(512)
-    plt.plot(freq, np.abs(X), 'b-')
-    plt.xlabel("t(s)")
+    plt.subplot(612)
+    plt.plot(freq, np.abs(X / N * 2), 'b-')  # A[k]=|X[k]|/N*2
+    plt.xlabel("freq(Hz)")
     plt.ylabel("Amplitude")
     plt.title("shift")
     plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
 
-    plt.subplot(513)
-    plt.plot(freq, np.abs(X_no_shift), 'b-')
-    plt.xlabel("t(s)")
-    plt.ylabel("Amplitude")
-    plt.title("no shift")
-    plt.grid(True)
-
-    plt.subplot(514)
+    plt.subplot(613)
     plt.stem(freq, phases_cut, use_line_collection=True)
     # plt.plot(freq, phases_cut)
-    plt.xlabel("t(s)")
+    plt.xlabel("freq(Hz)")
     plt.ylabel("Amplitude")
     plt.title("phases cut")
     plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
 
-    plt.subplot(515)
-    plt.plot(freq, phases)
+    plt.subplot(614)
+    plt.plot(t_recon, np.real(x_recon), 'r-')
     plt.xlabel("t(s)")
+    plt.ylabel("Amplitude")
+    plt.title("Reconstruct")
+    plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
+
+    plt.subplot(615)
+    plt.plot(freq, np.abs(X_no_shift) / N * 2, 'b-')
+    plt.xlabel("freq(Hz)")
+    plt.ylabel("Amplitude")
+    plt.title("no shift")
+    plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
+
+    plt.subplot(616)
+    plt.plot(freq, phases)
+    plt.xlabel("freq(Hz)")
     plt.ylabel("Amplitude")
     plt.title("phases no cut")
     plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
 
     plt.show()
 
