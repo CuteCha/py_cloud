@@ -405,5 +405,58 @@ def test8():
     plt.show()
 
 
+def test9():
+    fs = 64
+    ts = 1 / fs
+    t = np.arange(0, 10, ts)
+    a_f = [(3, 1, np.pi / 6), (1, 4, np.pi / 2), (1, 32, 0), (2, 3, -np.pi), (0.75, 2, np.pi)]
+
+    N = len(t)
+    f = np.arange(N) * fs / N
+
+    x = np.sum([a * np.cos(2 * np.pi * f * t + p) for a, f, p in a_f], axis=0) + np.sqrt(3) / 2
+    X = np.fft.fft(x)
+    X_shift = np.fft.fftshift(X)
+    f_shift = f - fs / 2
+
+    X_backup = np.where(np.abs(X_shift) < 1e-6, 0, X_shift)  # real(x)<0.3
+
+    print("X[{}]={}; {}".format(N / 2, X_shift[0], X_shift[0] * 2 / N))
+    print("X[{}]={}; {}".format(0, X_shift[N // 2], X_shift[N // 2] * 2 / N))
+    # print("len(f)={}\nf={}".format(len(f_shift), f_shift))
+
+    plt.figure(figsize=(16, 24))
+
+    plt.subplot(611)
+    plt.plot(t, x, 'b-')
+    # plt.plot(t_recon, np.real(x_recon), 'r-')
+    plt.xlabel("t(s)")
+    plt.ylabel("Amplitude")
+    plt.title("Signal")
+    plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
+
+    plt.subplot(612)
+    # plt.plot(f_shift, np.abs(X_shift) * 2 / N, 'b-')
+    plt.stem(f_shift, np.abs(X_shift) * 2 / N, use_line_collection=True)
+    plt.xlabel("f(Hz)")
+    plt.ylabel("Amplitude")
+    plt.title("Amplitude spectrum")
+    plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
+
+    plt.subplot(613)
+    # plt.stem(f_shift, np.angle(X_shift), use_line_collection=True)
+    plt.stem(f_shift, np.angle(X_backup), use_line_collection=True)
+    plt.xlabel("f(Hz)")
+    plt.ylabel("Phase")
+    plt.title("Phase spectrum")
+    plt.grid(True)
+    plt.subplots_adjust(hspace=0.4)
+
+    plt.show()
+    print("done")
+
+
 if __name__ == '__main__':
-    test8()
+    test9()
