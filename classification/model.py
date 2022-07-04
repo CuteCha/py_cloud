@@ -3,6 +3,7 @@
 import numpy as np
 import tensorflow.keras as keras
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 
 from utils import get_features
 
@@ -70,6 +71,48 @@ def main():
 def sever_model(audio_file):
     model = keras.models.load_model('saved_models/audio_classification.hdf5')
     predict(model, audio_file)
+
+
+def serving_input_receiver_fn():
+    features = tf.compat.v1.placeholder(dtype=tf.float32, shape=[None, 173], name='feature')
+    return tf.estimator.export.ServingInputReceiver(features, features)
+
+
+def raw_serving_input_fn():
+    examples = tf.compat.v1.placeholder(dtype=tf.float32, shape=[None, 173], name='feature')
+    features = {"feature": examples}
+    receiver_tensors = {'predictor_inputs': examples}
+    return tf.estimator.export.ServingInputReceiver(features, receiver_tensors)
+
+
+def input_fn(X, y):
+    dataset = tf.data.Dataset.from_tensor_slices((X, y))
+    dataset = dataset.batch(32).repeat()
+    return dataset
+
+
+def keras_to_estimator():
+    model = keras.Sequential([
+        keras.layers.Dense(100, activation='elu', name="input"),
+        keras.layers.Dropout(0.5),
+        keras.layers.Dense(200, activation='elu'),
+        keras.layers.Dropout(0.5),
+        keras.layers.Dense(100, activation='elu'),
+        keras.layers.Dropout(0.5),
+        keras.layers.Dense(10, activation='softmax'),
+    ])
+
+    model.compile(loss=keras.losses.SparseCategoricalCrossentropy(),
+                  optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+                  metrics=['accuracy'])
+    keras_estimator = keras.estimator.model_to_estimator(
+        keras_model=model, model_dir="saved_models/dnn2")
+
+    X_train, X_test, y_train, y_test = load_dataset()
+    keras_estimator.train(input_fn=lambda: input_fn(X_train, y_train), steps=100)
+    eval_result = keras_estimator.evaluate(input_fn=lambda: input_fn(X_test, y_test), steps=10)
+    print('Eval result: {}'.format(eval_result))
+    # keras_estimator.export_saved_model("saved_models/dnn2pb", serving_input_receiver_fn)
 
 
 def debug():
