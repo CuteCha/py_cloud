@@ -224,13 +224,110 @@ def model08():
     print(np.argmax(y_pred, axis=1))
 
 
-class MMoE(keras.Model, ABC):
+class MMoE(keras.Model):
     def __init__(self, units, num_experts, num_tasks, **kwargs):
         super().__init__(**kwargs)
         self.units = units
         self.num_experts = num_experts
         self.num_tasks = num_tasks
 
+    def call(self, inputs, training=None, mask=None):
+        pass
+
+    def get_config(self):
+        pass
+
 
 def model09():
     pass
+
+
+class Encoder(keras.layers.Layer):
+    def __init__(self, l2_rate=1e-3):
+        super().__init__()
+        self.l2_rate = l2_rate
+        self.dense1 = None
+        self.dense2 = None
+        self.dense3 = None
+
+    def build(self, input_shape):
+        self.dense1 = keras.layers.Dense(
+            units=32,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+        self.dense2 = keras.layers.Dense(
+            units=64,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+        self.dense3 = keras.layers.Dense(
+            units=128,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+
+    def call(self, inputs, training=None, mask=None):
+        x = self.dense1(inputs)
+        x = self.dense2(x)
+        x = self.dense3(x)
+        return x
+
+
+class Decoder(keras.layers.Layer):
+    def __init__(self, l2_rate=1e-3):
+        super().__init__()
+        self.l2_rate = l2_rate
+        self.dense1 = None
+        self.dense2 = None
+        self.dense3 = None
+
+    def build(self, input_shape):
+        self.dense1 = keras.layers.Dense(
+            units=64,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+        self.dense2 = keras.layers.Dense(
+            units=32,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+        self.dense3 = keras.layers.Dense(
+            units=16,
+            activation='relu',
+            kernel_regularizer=keras.regularizers.l2(self.l2_rate),
+        )
+
+    def call(self, inputs, training=None, mask=None):
+        x = self.dense1(inputs)
+        x = self.dense2(x)
+        x = self.dense3(x)
+        return x
+
+
+class AutoEncoder(keras.Model):
+    def __init__(self):
+        super().__init__()
+        self.encoder = Encoder()
+        self.decoder = Decoder()
+
+    def call(self, inputs, training=None, mask=None):
+        x = self.encoder(inputs)
+        x = self.decoder(x)
+        return x
+
+    def get_config(self):
+        pass
+
+
+def model10():
+    model = AutoEncoder()
+    model.build((None, 16))
+    model.summary()
+    print(model.layers)
+    print(model.weights)
+
+
+if __name__ == '__main__':
+    model10()

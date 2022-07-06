@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow.keras as keras
+import tensorflow as tf
 
 
 def load_data():
@@ -8,6 +9,23 @@ def load_data():
     x_valid = x_valid / 255.0
 
     return x_train, y_train, x_valid, y_valid
+
+
+def input_fn(x, y):
+    dataset = tf.data.Dataset.from_tensor_slices((x, y))
+    dataset = dataset.batch(32)
+    return dataset
+
+
+def load_dataset():
+    (x_train, y_train), (x_valid, y_valid) = keras.datasets.fashion_mnist.load_data()
+    x_train = x_train / 255.0
+    x_valid = x_valid / 255.0
+
+    dataset_train = input_fn(x_train, y_train)
+    dataset_valid = input_fn(x_valid, y_valid)
+
+    return dataset_train, dataset_valid
 
 
 def get_model01():
@@ -78,7 +96,7 @@ class NNBlock(keras.layers.Layer):
         return x
 
 
-def main():
+def train01():
     x_train, y_train, x_valid, y_valid = load_data()
     model = get_model01()
     model.summary()
@@ -93,6 +111,66 @@ def main():
     y_pred = model.predict(x_valid[:2])
     y_index = np.argmax(y_pred, axis=1)
     print(y_index)
+
+
+def train01():
+    dataset_train, dataset_valid = load_dataset()
+    model = get_model01()
+    optimizer = keras.optimizers.Adam(0.001)
+    loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+    loss = 0.0
+    for epoch in range(5):
+        for features, labels in dataset_train:
+            loss = train_step01(model, loss_fn, optimizer, features, labels)
+        print("Finished epoch: {}, loss: {}".format(epoch, loss))
+
+
+@tf.function
+def train_step01(model, loss_fn, optimizer, inputs, labels):
+    with tf.GradientTape() as tape:
+        predictions = model(inputs, training=True)
+        loss = loss_fn(labels, predictions)
+        # regularization_loss = tf.math.add_n(model.losses)
+        # total_loss = pred_loss + regularization_loss
+
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+
+    return loss
+
+
+def train02():
+    dataset_train, dataset_valid = load_dataset()
+    model = get_model01()
+    model.losses
+    optimizer = keras.optimizers.Adam(0.001)
+    loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+    for epoch in range(5):
+        loss = train_step02(model, loss_fn, optimizer, dataset_train)
+        print("Finished epoch: {}, loss: {}".format(epoch, loss))
+
+
+@tf.function
+def train_step02(model, loss_fn, optimizer, dataset):
+    res = 0.0
+    for x, y in dataset:
+        with tf.GradientTape() as tape:
+            predictions = model(x, training=True)
+            loss = loss_fn(y, predictions)
+            res = loss
+            regularization_loss = tf.math.add_n(model.losses)
+            # total_loss = loss + regularization_loss
+
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+
+    return res
+
+
+def main():
+    train02()
 
 
 if __name__ == '__main__':
