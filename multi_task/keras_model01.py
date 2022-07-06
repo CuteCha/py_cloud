@@ -320,13 +320,17 @@ class AutoEncoder(keras.Model):
     def get_config(self):
         pass
 
+    def get_model(self):
+        x = keras.Input((16,))
+        return keras.Model(inputs=x, outputs=self.call(x))
+
 
 def model10():
     model = AutoEncoder()
-    model.build((None, 16))
-    model.summary()
-    print(model.layers)
-    print(model.weights)
+    # model.build((None, 16)) #Output Shape: multiple
+    model.get_model().summary()
+    # print(model.layers)
+    # print(model.weights)
 
 
 if __name__ == '__main__':
