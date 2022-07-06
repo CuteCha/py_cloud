@@ -27,14 +27,14 @@ def load_image(file_name):
 
 def inference(file_name, trained_model, trained_category_lb, trained_color_lb):
     image, image_show = load_image(file_name)
-    (categoryProba, colorProba) = trained_model.predict(image)
-    category_idx = categoryProba[0].argmax()
-    color_idx = colorProba[0].argmax()
+    (category_proba, color_proba) = trained_model.predict(image)
+    category_idx = category_proba[0].argmax()
+    color_idx = color_proba[0].argmax()
     category_label = trained_category_lb.classes_[category_idx]
     color_label = trained_color_lb.classes_[color_idx]
 
-    category_text = "category: {} ({:.2f}%)".format(category_label, categoryProba[0][category_idx] * 100)
-    color_text = "color: {} ({:.2f}%)".format(color_label, colorProba[0][color_idx] * 100)
+    category_text = "category: {} ({:.2f}%)".format(category_label, category_proba[0][category_idx] * 100)
+    color_text = "color: {} ({:.2f}%)".format(color_label, color_proba[0][color_idx] * 100)
     cv2.putText(image_show, color_text, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     cv2.putText(image_show, category_text, (10, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 

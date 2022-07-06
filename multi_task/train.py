@@ -56,10 +56,10 @@ def load_train_data(file_name):
     color_labels = color_lb.fit_transform(color_labels)
     print("cate_num: {}, color_num: {}".format(len(category_lb.classes_), len(color_lb.classes_)))
 
-    (trainX, testX, trainCategoryY, testCategoryY, trainColorY, testColorY) = \
+    (train_x, test_x, train_category_y, test_category_y, train_color_y, test_color_y) = \
         train_test_split(data, category_labels, color_labels, test_size=0.2, random_state=101)
 
-    return trainX, testX, trainCategoryY, testCategoryY, trainColorY, testColorY, category_lb, color_lb
+    return train_x, test_x, train_category_y, test_category_y, train_color_y, test_color_y, category_lb, color_lb
 
 
 def save_model(model, category_lb, color_lb, args):
@@ -92,12 +92,12 @@ def show_metric(H, metrics, fig_name):
     plt.close()
 
 
-def plt_metric(H, args):
+def plt_metric(h, args):
     loss_names = ["loss", "category_output_loss", "color_output_loss"]
-    show_metric(H, loss_names, "{}/loss".format(args["fig"]))
+    show_metric(h, loss_names, "{}/loss".format(args["fig"]))
 
     accuracy_names = ["category_output_accuracy", "color_output_accuracy"]
-    show_metric(H, accuracy_names, "{}/acc".format(args["fig"]))
+    show_metric(h, accuracy_names, "{}/acc".format(args["fig"]))
 
 
 def main():
@@ -111,22 +111,22 @@ def main():
     ap.add_argument("-f", "--fig", default="logs/fig", help="base filename for generated plots")
     args = vars(ap.parse_args())
 
-    trainX, testX, trainCategoryY, testCategoryY, trainColorY, testColorY, categoryLB, colorLB = load_train_data(
-        args["dataset"])
+    train_x, test_x, train_category_y, test_category_y, train_color_y, test_color_y, category_lb, color_lb = \
+        load_train_data(args["dataset"])
 
-    model = FashionNet.build(96, 96, len(categoryLB.classes_), len(colorLB.classes_))
+    model = FashionNet.build(96, 96, len(category_lb.classes_), len(color_lb.classes_))
 
     losses = {"category_output": "categorical_crossentropy", "color_output": "categorical_crossentropy"}
     loss_weights = {"category_output": 1.0, "color_output": 1.0}
     opt = Adam(learning_rate=INIT_LR, decay=INIT_LR / EPOCHS)
     model.compile(optimizer=opt, loss=losses, loss_weights=loss_weights, metrics=["accuracy"])
 
-    H = model.fit(trainX, {"category_output": trainCategoryY, "color_output": trainColorY},
-                  validation_data=(testX, {"category_output": testCategoryY, "color_output": testColorY}),
+    h = model.fit(train_x, {"category_output": train_category_y, "color_output": train_color_y},
+                  validation_data=(test_x, {"category_output": test_category_y, "color_output": test_color_y}),
                   epochs=EPOCHS, verbose=1)
 
-    save_model(model, categoryLB, colorLB, args)
-    plt_metric(H, args)
+    save_model(model, category_lb, color_lb, args)
+    plt_metric(h, args)
 
 
 if __name__ == '__main__':
