@@ -143,6 +143,7 @@ def train_step01(model, loss_fn, optimizer, inputs, labels):
 def train02():
     dataset_train, dataset_valid = load_dataset()
     model = get_model01()
+    model.losses
     optimizer = keras.optimizers.Adam(0.001)
     loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
