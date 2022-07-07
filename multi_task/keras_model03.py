@@ -86,13 +86,7 @@ def train02():
 
 def train03():
     ds_train, ds_test, max_words, cat_num = load_dataset()
-    print("max_words:{}, cat_num:{}".format(max_words, cat_num))
     model = get_model(max_words, cat_num)
-    # model.summary()
-    model.compile(optimizer=keras.optimizers.Nadam(),
-                  loss=keras.losses.SparseCategoricalCrossentropy(),
-                  metrics=[keras.metrics.SparseCategoricalAccuracy(), keras.metrics.SparseTopKCategoricalAccuracy(5)]
-                  )
 
     optimizer = keras.optimizers.Nadam()
     loss_func = keras.losses.SparseCategoricalCrossentropy()
@@ -103,15 +97,15 @@ def train03():
     test_loss = keras.metrics.Mean(name='test_loss')
     test_metric = keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 
-    for epoch in tf.range(1, 11):
+    for epoch in tf.range(10):
         for features, labels in ds_train:
             train_step(model, loss_func, optimizer, train_loss, train_metric, features, labels)
 
         for features, labels in ds_test:
             test_step(model, loss_func, test_loss, test_metric, features, labels)
 
-        tf.print(tf.strings.format("Epoch={}, Train Loss:{}, Train Accuracy:{}, Test Loss:{}, Test Accuracy:{}",
-                                   (epoch, train_loss.result(), train_metric.result(),
+        tf.print(tf.strings.format("epoch:{}, train loss:{}, train accuracy:{}, test loss:{}, test accuracy:{}",
+                                   (epoch + 1, train_loss.result(), train_metric.result(),
                                     test_loss.result(), test_metric.result())))
 
         train_loss.reset_states()
