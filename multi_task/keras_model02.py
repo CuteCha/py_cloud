@@ -96,7 +96,7 @@ class NNBlock(keras.layers.Layer):
         return x
 
 
-def train01():
+def train01a():
     x_train, y_train, x_valid, y_valid = load_data()
     model = get_model01()
     model.summary()
