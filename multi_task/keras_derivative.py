@@ -101,6 +101,29 @@ def tape_grad_test05():
     del tape
 
 
+def tape_grad_test05a():
+    x1 = tf.Variable(2.0)
+    x2 = tf.Variable(3.0)
+    with tf.GradientTape() as tape:
+        z1 = f(x1)
+        z2 = g(x1, x2)
+
+    grad_z = tape.gradient(z1 + z2, [x1, x2])
+    print(grad_z)
+
+
+def tape_grad_test05b():
+    x1 = tf.Variable(2.0)
+    x2 = tf.Variable(3.0)
+    with tf.GradientTape() as tape:
+        z1 = f(x1)
+        z2 = g(x1, x2)
+        z = z1 + z2
+
+    grad_z = tape.gradient(z, [x1, x2])
+    print(grad_z)
+
+
 def tape_grad_test06():
     x1 = tf.Variable(2.0)
     x2 = tf.Variable(3.0)
@@ -142,7 +165,8 @@ def tape_sgd_test02():
 
 
 def main():
-    tape_sgd_test02()
+    tape_grad_test05a()
+    tape_grad_test05b()
 
 
 if __name__ == '__main__':
