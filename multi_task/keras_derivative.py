@@ -164,9 +164,43 @@ def tape_sgd_test02():
     print(x, f(x))
 
 
+def tape_sgd_test03():
+    x = tf.Variable(0.0)
+    y = tf.Variable(1.0)
+    lr = 0.001
+    optimizer = keras.optimizers.SGD(learning_rate=lr)
+    grad_z = []
+    for _ in range(1000):
+        with tf.GradientTape() as tape:
+            t = x + y
+            z = f(x)
+        grad_z = tape.gradient(z, [x, y])
+        optimizer.apply_gradients(zip(grad_z, [x, y]))
+
+    print(grad_z)
+    print(x, f(x))
+
+
+def tape_sgd_test03b():
+    x = tf.Variable(0.0)
+    y = tf.Variable(1.0)
+    lr = 0.001
+
+    optimizer = keras.optimizers.SGD(learning_rate=lr)
+    grad_z = []
+    for _ in range(1000):
+        with tf.GradientTape() as tape:
+            t = x + y
+            z = f(x)
+        grad_z = tape.gradient(z, [x, y])
+        optimizer.apply_gradients(zip(grad_z, [x, y]))
+
+    print(grad_z)
+    print(x, f(x))
+
+
 def main():
-    tape_grad_test05a()
-    tape_grad_test05b()
+    tape_sgd_test03b()
 
 
 if __name__ == '__main__':

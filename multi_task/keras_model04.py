@@ -108,8 +108,8 @@ def main():
 @tf.function
 def train_step(model, train_cate_loss, train_cate_metric, train_color_loss, train_color_metric,
                features, cates, colors, loss_func, optimizer):
-    p = np.random.uniform()
-    print("p={}".format(p))
+    p = 0.35  # np.random.uniform()
+    print("p={}".format(p), flush=True)
     if p < 0.4:
         with tf.GradientTape() as tape:
             predictions = model(features, training=True)
@@ -193,8 +193,12 @@ def run():
     valid_color_loss = keras.metrics.Mean(name='valid_color_loss')
     valid_color_metric = keras.metrics.CategoricalCrossentropy(name='valid_color_metric')
 
+    cnt = 0
     for epoch in range(5):
+        print("epoch:{}".format(epoch + 1), flush=True)
         for features, cates, colors in ds_train:
+            cnt += 1
+            print("---step: {}".format(cnt))
             train_step(model, train_cate_loss, train_cate_metric, train_color_loss, train_color_metric,
                        features, cates, colors, loss_func, optimizer)
 
@@ -202,14 +206,14 @@ def run():
             valid_step(model, valid_cate_loss, valid_cate_metric, valid_color_loss, valid_color_metric,
                        features, cates, colors, loss_func)
 
-        print("epoch:{}".format(epoch + 1))
+        print("epoch:{}".format(epoch + 1), flush=True)
         print("train: cate_loss:{}, cate_metric:{}, color_loss:{}, color_metric:{}".format(
             train_cate_loss.result(), train_cate_metric.result(), train_color_loss.result(), train_color_metric.result()
-        ))
+        ), flush=True)
         print("valid: cate_loss:{}, cate_metric:{}, color_loss:{}, color_metric:{}".format(
             valid_cate_loss.result(), valid_cate_metric.result(), valid_color_loss.result(), valid_color_metric.result()
-        ))
-        print("=" * 72)
+        ), flush=True)
+        print("=" * 72, flush=True)
 
         train_cate_loss.reset_states()
         train_cate_metric.reset_states()
