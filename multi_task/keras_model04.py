@@ -105,10 +105,10 @@ def main():
                   epochs=EPOCHS, verbose=1)
 
 
-@tf.function
+# @tf.function
 def train_step(model, train_cate_loss, train_cate_metric, train_color_loss, train_color_metric,
                features, cates, colors, loss_func, optimizer):
-    p = 0.35  # np.random.uniform()
+    p = np.random.uniform()
     print("p={}".format(p), flush=True)
     if p < 0.4:
         with tf.GradientTape() as tape:
