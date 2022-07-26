@@ -20,6 +20,57 @@ model_dir = "./logs/adult/checkpoints/"
 server_model_dir = "./logs/adult/save_model/"
 
 
+def get_serving_input_receiver_fn(wide_columns, deep_columns):
+    feature_spec = tf.feature_column.make_parse_example_spec(wide_columns + deep_columns)
+    return tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
+
+
+def input_fn(data_file, num_epochs, batch_size, shuffle):
+    # 解析csv文件中一行数据
+    def parse_csv(value):
+        tf.logging.info('Parsing {}'.format(data_file))
+        columns = tf.io.decode_csv(value, record_defaults=_DEFAULTS)
+        features = dict(zip(_HEADERS, columns))
+        labels = features.pop('income_bracket')
+        classes = tf.cast(tf.equal(labels, '>50K'), tf.int32)  # binary classification
+        return features, classes
+
+    # 构建训练数据集
+    dataset = tf.data.TextLineDataset(data_file)
+
+    if shuffle:
+        dataset = dataset.shuffle(buffer_size=2000)
+
+    dataset = dataset.map(parse_csv, num_parallel_calls=5)
+    dataset = dataset.repeat(num_epochs)
+    dataset = dataset.batch(batch_size)
+
+    return dataset
+
+
+def debug():
+    a = numeric_column('a')
+    b = numeric_column('b')
+    a_buckets = bucketized_column(a, boundaries=[10, 15, 20, 25, 30])
+
+    data = {'a': [15, 9, 17, 19, 21, 18, 25, 30],
+            'b': [5.0, 6.4, 10.5, 13.6, 15.7, 19.9, 20.3, 0.0]}
+
+    print("=" * 72)
+    inputs = input_layer(data, [a_buckets, b])
+    a_inputs = input_layer(data, [a])
+    y = tf.layers.dense(inputs, 3)
+    print(inputs)
+    print(a_inputs)
+    print(y)
+    print("=" * 72)
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        print(sess.run(inputs))
+        print(sess.run(a_inputs))
+        print(sess.run(y))
+
+
 def build_model_columns():
     # 连续型特征
     age = numeric_column('age')
@@ -58,12 +109,12 @@ def build_model_columns():
 
     # 用于宽度模型与深度模型
     base_columns = [
-        education, marital_status, relationship, workclass, occupation,
-        age_buckets]
+        indicator_column(education), indicator_column(marital_status), indicator_column(relationship),
+        indicator_column(workclass), indicator_column(occupation), age_buckets]
     # 构建交叉特征
     crossed_columns = [
-        crossed_column(['education', 'occupation'], hash_bucket_size=100),
-        crossed_column([age_buckets, 'education', 'occupation'], hash_bucket_size=100),
+        indicator_column(crossed_column(['education', 'occupation'], hash_bucket_size=100)),
+        indicator_column(crossed_column([age_buckets, 'education', 'occupation'], hash_bucket_size=100)),
         indicator_column(crossed_column([age_buckets, "gender"], hash_bucket_size=100)),
         indicator_column(crossed_column(["native_country", "gender"], hash_bucket_size=100))
     ]
@@ -89,79 +140,88 @@ def build_model_columns():
     return wide_columns, deep_columns
 
 
-def input_fn(data_file, num_epochs, batch_size, shuffle):
-    # 解析csv文件中一行数据
-    def parse_csv(value):
-        tf.logging.info('Parsing {}'.format(data_file))
-        columns = tf.io.decode_csv(value, record_defaults=_DEFAULTS)
-        features = dict(zip(_HEADERS, columns))
-        labels = features.pop('income_bracket')
-        classes = tf.cast(tf.equal(labels, '>50K'), tf.int32)  # binary classification
-        return features, classes
+def model_fn(features, labels, mode, params):
+    wide_columns = params["wide_columns"]
+    deep_columns = params["deep_columns"]
 
-    # 构建训练数据集
-    dataset = tf.data.TextLineDataset(data_file)
+    wide_inputs = input_layer(features=features, feature_columns=wide_columns)
+    deep_inputs = input_layer(features=features, feature_columns=deep_columns)
+    nn_outputs = tf.layers.dense(deep_inputs, 128, activation=tf.nn.relu)
+    nn_outputs = tf.layers.dense(nn_outputs, 64, activation=tf.nn.relu)
 
-    if shuffle:
-        dataset = dataset.shuffle(buffer_size=2000)
+    last_inputs = tf.concat([wide_inputs, nn_outputs], axis=1)
+    logits = tf.layers.dense(last_inputs, params['n_classes'], activation=None, name="ctr")
+    pred_cls = tf.argmax(logits, 1)
 
-    dataset = dataset.map(parse_csv, num_parallel_calls=5)
-    dataset = dataset.repeat(num_epochs)
-    dataset = dataset.batch(batch_size)
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        return tf.estimator.EstimatorSpec(
+            mode=mode,
+            predictions={
+                'cls_ids': pred_cls[:, tf.newaxis],
+                'probs': tf.nn.softmax(logits),
+                'logits': logits,
+            })
 
-    return dataset
+    loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
+    if mode == tf.estimator.ModeKeys.EVAL:
+        return tf.estimator.EstimatorSpec(
+            mode=mode,
+            loss=loss,
+            eval_metric_ops={
+                'accuracy': tf.metrics.accuracy(
+                    labels=labels,
+                    predictions=pred_cls,
+                    name='acc_op')
+            }
+        )
+
+    assert mode == tf.estimator.ModeKeys.TRAIN
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
+    return tf.estimator.EstimatorSpec(
+        mode=mode,
+        loss=loss,
+        train_op=train_op)
 
 
-def get_serving_input_receiver_fn(wide_columns, deep_columns):
-    feature_spec = tf.feature_column.make_parse_example_spec(wide_columns + deep_columns)
-    return tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
-
-
-def main(_):
+def main():
     wide_columns, deep_columns = build_model_columns()
-    hidden_units = [100, 25]
 
-    gpu_options = tf.GPUOptions(allow_growth=True)  # allow_growth=False
-    session_conf = tf.ConfigProto(
-        log_device_placement=False,
-        allow_soft_placement=True,
-        gpu_options=gpu_options)  # log_device_placement=False
-    run_config = tf.estimator.RunConfig(
-        tf_random_seed=123,
-        save_summary_steps=500,
-        save_checkpoints_steps=10000,
-        keep_checkpoint_max=1,
-        log_step_count_steps=100
-    ).replace(session_config=session_conf)
+    config = tf.estimator.RunConfig().replace(
+        session_config=tf.ConfigProto(
+            log_device_placement=False,
+            allow_soft_placement=True,
+            gpu_options=tf.GPUOptions(allow_growth=True)),
+        log_step_count_steps=100, save_summary_steps=500)
 
-    model = tf.estimator.DNNLinearCombinedClassifier(
+    model = tf.estimator.Estimator(
+        model_fn=model_fn,
         model_dir=model_dir,
-        linear_feature_columns=wide_columns,
-        dnn_feature_columns=deep_columns,
-        dnn_hidden_units=hidden_units,
-        config=run_config)
+        params={
+            "wide_columns": wide_columns,
+            "deep_columns": deep_columns,
+            'n_classes': 2
+        },
+        config=config)
 
     model.train(
-        input_fn=lambda: input_fn(train_file, 1, 64, True),
-        hooks=None)
+        input_fn=lambda: input_fn(train_file, 1, 64, True))
+    print("train success")
 
     results = model.evaluate(
         input_fn=lambda: input_fn(eval_file, 1, 64, False))
     print(results)
+    print("evaluate success")
+
+    results = model.predict(
+        input_fn=lambda: input_fn(eval_file, 1, 64, False))
+    print(results)
+    print("predict success")
 
     serving_input_receiver_fn = get_serving_input_receiver_fn(wide_columns, deep_columns)
-    model.export_savedmodel(server_model_dir, serving_input_receiver_fn)
-
-
-def main02(_):
-    tf.estimator.EstimatorSpec()
-    tf.estimator.Head()
-    tf.estimator.MultiHead()
-    tf.estimator.RegressionHead()
-    tf.estimator.MultiClassHead()
-    tf.estimator.Head.create_estimator_spec()
+    model.export_saved_model(server_model_dir, serving_input_receiver_fn)
+    print("save model success")
 
 
 if __name__ == '__main__':
-    tf.logging.set_verbosity(tf.logging.INFO)
-    tf.app.run(main=main)
+    main()
