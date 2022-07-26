@@ -168,10 +168,8 @@ def model_fn(features, labels, mode, params):
             mode=mode,
             loss=loss,
             eval_metric_ops={
-                'accuracy': tf.metrics.accuracy(
-                    labels=labels,
-                    predictions=pred_cls,
-                    name='acc_op')
+                'acc': tf.metrics.accuracy(labels=labels, predictions=pred_cls),
+                "auc": tf.metrics.auc(labels=labels, predictions=tf.sigmoid(logits[:, 1]))
             }
         )
 

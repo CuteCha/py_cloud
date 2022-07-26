@@ -76,14 +76,13 @@ def model_fn(features, labels, mode, params):
         return tf.estimator.EstimatorSpec(mode, predictions=predictions)
 
     loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
-    accuracy = tf.metrics.accuracy(labels=labels,
-                                   predictions=pred_cls,
-                                   name='acc_op')
-    metrics = {'accuracy': accuracy}
 
     if mode == tf.estimator.ModeKeys.EVAL:
         return tf.estimator.EstimatorSpec(
-            mode, loss=loss, eval_metric_ops=metrics)
+            mode,
+            loss=loss,
+            eval_metric_ops={'acc': tf.metrics.accuracy(labels=labels, predictions=pred_cls)}
+        )
 
     assert mode == tf.estimator.ModeKeys.TRAIN
 
