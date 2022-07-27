@@ -96,5 +96,16 @@ def debug05():
     model.summary()
 
 
+def debug06():
+    movie_id = tf.feature_column.categorical_column_with_identity(key='movieId', num_buckets=10, default_value=0)
+    movie_id_emb = tf.feature_column.embedding_column(movie_id, 3)
+    movie_id_ind = tf.feature_column.indicator_column(movie_id)
+
+    data = {'movieId': [1, 7, 9]}
+    feature_layer = keras.layers.DenseFeatures([movie_id_emb, movie_id_ind])
+    features = feature_layer(data)
+    print(features)
+
+
 if __name__ == '__main__':
-    debug05()
+    debug06()
