@@ -144,13 +144,13 @@ def main02():
 def debug():
     import numpy as np
     a = np.arange(1, 17).reshape(4, 4)
-    au = np.triu(a)
-    al = np.tril(a)
+    au = np.triu(a)  # np.triu(a,1) 不包括对角元
+    al = np.tril(a)  # np.tril(a,-1) 不包括对角元
     adv = np.diag(a)
     ad = np.diag(np.diag(a))
 
     b = tf.constant(a, dtype=tf.float32)
-    bu = tf.linalg.band_part(b, -1, 0)
+    bu = tf.linalg.band_part(b, 0, -1)  # tf.linalg.band_part(b, -1, 0)-tf.linalg.band_part(b, 0, 0) 不包括对角元
 
 
 if __name__ == '__main__':
