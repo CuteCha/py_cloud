@@ -151,6 +151,16 @@ def debug():
 
     b = tf.constant(a, dtype=tf.float32)
     bu = tf.linalg.band_part(b, 0, -1)  # tf.linalg.band_part(b, -1, 0)-tf.linalg.band_part(b, 0, 0) 不包括对角元
+    tf.gather_nd()
+    tf.gather()
+    up_list = [b[i][i + 1:] for i in range(b.get_shape()[-1])]
+    tf.concat(up_list, axis=-1)
+    # tf.concat([b[0][1:], b[1][2:], b[2][3:]], axis=-1)
+
+    z = tf.constant([[[1, 2, 3], [1, 2, 3], [1, 2, 3]], [[11, 12, 13], [11, 12, 13], [11, 12, 13]]], dtype=tf.float32)
+    zu = tf.concat(
+        [tf.reshape(tf.concat([z[k][i][i + 1:] for i in range(z.get_shape()[-1])], axis=-1), (1, -1)) for k in
+         range(z.get_shape()[0])], axis=0)
 
 
 if __name__ == '__main__':
