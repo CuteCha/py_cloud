@@ -1,8 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sympy
 
-def main():
+
+def debug02():
+    xjm1, xj, xjp1 = sympy.symbols(['x_{j-1}', 'x_{j}', 'x_{j+1}'])
+    x, h, eps = sympy.symbols(['x', 'h', '\epsilon'])
+    rho = lambda x: sympy.sin(sympy.pi * x)
+
+    A = - sympy.integrate(rho(x) * (x - xjm1) / h, (x, xjm1, xj))
+    B = - sympy.integrate(rho(x) * (xjp1 - x) / h, (x, xj, xjp1))
+
+    C = sympy.simplify(A + B)
+    print(C)
+    print(type(C))
+
+
+def debug01():
     t = np.linspace(0, 0.06, 1000)
     f = 50
     u_max = 220 * np.sqrt(2)
@@ -19,5 +34,20 @@ def main():
     print("done")
 
 
+def debug03():
+    x = np.linspace(0, 1, 1000)
+    u1 = -x ** 2 / 2 + x
+    u2 = 16 / (np.pi ** 3) * np.sin(np.pi / 2 * x)
+    u3 = 16 / (np.pi ** 3) * np.sin(np.pi / 2 * x) + 16 / (27 * np.pi ** 3) * np.sin(np.pi / 2 * x)
+    plt.figure(figsize=(10, 5))
+    plt.plot(x, u1, 'k--')
+    plt.plot(x, u2, 'r-')
+    plt.plot(x, u3, 'b-')
+    plt.xlabel('x')
+    plt.ylabel('u')
+    plt.grid()
+    plt.show()
+
+
 if __name__ == '__main__':
-    main()
+    debug03()
