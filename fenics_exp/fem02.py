@@ -20,33 +20,32 @@ def gen_matrix(x, func, h, N):
     K = np.zeros((N, N))
     M = np.zeros((N, N))
     f = np.zeros(N)
-    q = -1
     for i in range(1, N):
-        ek = (np.array([[1, -1], [-1, 1]]))
-        em = (q * np.array([[2, 1], [1, 2]]) * h ** 2 / 6)
-        ef = (h ** 2 * np.array([h / 6 - 3 * x[i - 1] / 2, h / 3 + x[i - 1] / 2]))
+        ek = (np.array([[1, -1], [-1, 1]]) / h)
+        em = (np.array([[2, 1], [1, 2]]) * h / 6)
+        ef = (h * np.array([h / 6 + x[i - 1] / 2, h / 3 + x[i - 1] / 2]))
         s = i - 1
         t = s + 2
         K[s:t, s:t] += ek
         M[s:t, s:t] += em
         f[s:t] += ef
 
-    return K + M, f
+    return K - M, f
 
 
-def fem_u(x, func, h, N, u0):
+def fem_u(x, func, h, N, u0, un):
     a, f = gen_matrix(x, func, h, N)
     # from pprint import pprint
     # pprint(a[:6, :6])
     # pprint(a[-6:, -6:])
     # pprint(f[:6])
     # pprint(f[-6:])
-    A = a[1:, 1:]
-    b = f[1:] - a[:, 0][1:] * u0
+    A = a[1:-1, 1:-1]
+    b = f[1:-1] - a[:, 0][1:-1] * u0 - a[:, -1][1:-1] * un
     # u = np.linalg.solve(A, b)
     u = np.linalg.lstsq(A, b, rcond=None)
 
-    return np.concatenate((np.array([u0]), u[0]))
+    return np.concatenate((np.array([u0]), u[0], np.array([un])))
 
 
 def fam_u():
@@ -81,6 +80,7 @@ def debug():
 
 def main():
     u0 = 0.0
+    un = 0.0
     L = 1
     h = 0.01
     x = np.arange(0, L + h, h)
@@ -89,16 +89,17 @@ def main():
     print(x[:10])
     print(x[-10:])
     u_exact = exact_u(x)
-    u_fem = fem_u(x, force, h, N, u0)
+    u_fem = fem_u(x, force, h, N, u0, un)
     u_fam = fam_u()
 
-    plt.figure()
+    plt.figure(figsize=(8, 8))
     plt.xlabel('x')
     plt.ylabel('u')
-    plt.plot(x, u_fem, 'bx')
-    plt.plot(x, u_fam, color="green", marker="x")
-    plt.plot(x, u_exact, 'r-')
+    plt.plot(x, u_fem, 'bo', label='u_fem')
+    plt.plot(x, u_fam, color="yellow", marker="x", label='u_fam')
+    plt.plot(x, u_exact, 'r-', label='u_exact')
     plt.grid(True)
+    plt.legend(loc='upper left')
     plt.show()
     print("done")
 
