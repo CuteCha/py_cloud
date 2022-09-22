@@ -5,30 +5,27 @@ from matplotlib import pyplot as plt
 
 def exact_u(x):
     '''
-    -u_{xx}+0.25*pi^2*u=0.5*pi^2*sin(0.5*pi*x)  x in (0,1)
+    -u_{xx}+u=sin(x)  x in (0,1)
     u(0)=0
     u'(0)=0
     '''
-    return np.sin(0.5 * np.pi * x) + 0.5 * np.exp(-0.5 * np.pi * x) - 0.5 * np.exp(0.5 * np.pi * x)
+    return np.sin(x) / 2 + np.exp(-x) / 4 - np.exp(x) / 4
 
 
 def force(x):
-    return 0.5 * np.pi ** 2 * np.sin(0.5 * np.pi * x)
+    return np.sin(x)
 
 
 def gen_matrix(x, func, h, N):
     K = np.zeros((N, N))
     M = np.zeros((N, N))
     f = np.zeros(N)
-    r = 0.5 * np.pi
-    q = r ** 2
     for i in range(1, N):
-        # ea = (np.array([[1, -1], [-1, 1]]) / h + 0.25 * np.pi ** 2 * np.array([[2, 1], [1, 2]]) * h / 6)
-        # ef = (np.array([func(x[i - 1]), func(x[i])]) * h / 2)
-        ek = (np.array([[1, -1], [-1, 1]]) / h)
-        em = (q * np.array([[2, 1], [1, 2]]) * h / 6)
-        ef = np.array([np.pi * np.cos(r * x[i - 1]) - 2 * (np.sin(r * x[i]) - np.sin(r * x[i - 1])) / h,
-                       -np.pi * np.cos(r * x[i]) + 2 * (np.sin(r * x[i]) - np.sin(r * x[i - 1])) / h])
+        ek = np.array([[1, -1], [-1, 1]]) / h
+        em = np.array([[2, 1], [1, 2]]) * h / 6
+        # tmp = (np.sin(x[i]) - np.sin(x[i - 1])) / (h ** 2)
+        # ef = np.array([np.cos(x[i - 1]) / h - tmp, -np.cos(x[i]) / h + tmp]) * h
+        ef = np.array([func(x[i - 1]), func(x[i])]) * h / 2  # approximate
         s = i - 1
         t = s + 2
         K[s:t, s:t] += ek
@@ -83,9 +80,10 @@ def main():
     plt.figure()
     plt.xlabel('x')
     plt.ylabel('u')
-    plt.plot(x, u_fem, 'bx')
-    plt.plot(x, u_exact, 'r-')
+    plt.plot(x, u_fem, 'bx', label="fem")
+    plt.plot(x, u_exact, 'r-', label="exact")
     plt.grid(True)
+    plt.legend()
     plt.show()
     print("done")
 
