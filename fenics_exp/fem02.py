@@ -48,7 +48,7 @@ def fem_u(x, func, h, N, u0, un):
     return np.concatenate((np.array([u0]), u[0], np.array([un])))
 
 
-def fam_u():
+def fdm_u():
     import scipy.sparse
 
     h = 0.01
@@ -90,13 +90,13 @@ def main():
     print(x[-10:])
     u_exact = exact_u(x)
     u_fem = fem_u(x, force, h, N, u0, un)
-    u_fam = fam_u()
+    u_fdm = fdm_u()
 
     plt.figure(figsize=(8, 8))
     plt.xlabel('x')
     plt.ylabel('u')
     plt.plot(x, u_fem, 'bo', label='u_fem')
-    plt.plot(x, u_fam, color="yellow", marker="x", label='u_fam')
+    plt.plot(x, u_fdm, color="yellow", marker="x", label='u_fdm')
     plt.plot(x, u_exact, 'r-', label='u_exact')
     plt.grid(True)
     plt.legend(loc='upper left')
