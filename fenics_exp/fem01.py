@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.sparse
 from matplotlib import pyplot as plt
 
 
@@ -23,9 +22,9 @@ def gen_matrix(x, func, h, N):
     for i in range(1, N):
         ek = np.array([[1, -1], [-1, 1]]) / h
         em = np.array([[2, 1], [1, 2]]) * h / 6
-        # tmp = (np.sin(x[i]) - np.sin(x[i - 1])) / (h ** 2)
-        # ef = np.array([np.cos(x[i - 1]) / h - tmp, -np.cos(x[i]) / h + tmp]) * h
-        ef = np.array([func(x[i - 1]), func(x[i])]) * h / 2  # approximate
+        tmp = (np.sin(x[i]) - np.sin(x[i - 1])) / (h ** 2)
+        ef = np.array([np.cos(x[i - 1]) / h - tmp, -np.cos(x[i]) / h + tmp]) * h
+        # ef = np.array([func(x[i - 1]), func(x[i])]) * h / 2  # approximate
         s = i - 1
         t = s + 2
         K[s:t, s:t] += ek
@@ -37,11 +36,6 @@ def gen_matrix(x, func, h, N):
 
 def fem_u(x, func, h, N, u0):
     a, f = gen_matrix(x, func, h, N)
-    # from pprint import pprint
-    # pprint(a[:6, :6])
-    # pprint(a[-6:, -6:])
-    # pprint(f[:6])
-    # pprint(f[-6:])
     A = a[1:, 1:]
     b = f[1:] - a[:, 0][1:] * u0
     u = np.linalg.solve(A, b)
