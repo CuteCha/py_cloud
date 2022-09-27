@@ -115,5 +115,60 @@ def example04():
     plt.show()
 
 
+def example05():
+    fig, ax = plt.subplots(figsize=(8, 8))
+    xdata, ydata = [], []
+    ln, = plt.plot([], [], 'ro')
+
+    def init():
+        ax.set_xlim(0, 2 * np.pi)
+        ax.set_ylim(-1, 1)
+        return ln,
+
+    def update(frame):
+        xdata.append(frame)
+        ydata.append(np.sin(frame))
+        ln.set_data(xdata, ydata)
+        return ln,
+
+    frames = np.linspace(0, 2 * np.pi, 128)
+    ani = FuncAnimation(fig, update, frames=frames, init_func=init, blit=True)
+    ani.save('./logs/sin_o.gif')
+    plt.show()
+
+
+def example06():
+    import turtle
+
+    pen = turtle.Turtle()
+
+    def curve():
+        for i in range(200):
+            pen.right(1)
+            pen.forward(1)
+
+    def heart():
+        pen.fillcolor('red')
+        pen.begin_fill()
+        pen.left(140)
+        pen.forward(113)
+        curve()
+        pen.left(120)
+        curve()
+        pen.forward(112)
+        pen.end_fill()
+
+    def txt():
+        pen.up()
+        pen.setpos(-68, 95)
+        pen.down()
+        pen.color('lightgreen')
+        pen.write("GeeksForGeeks", font=("Verdana", 12, "bold"))
+
+    heart()
+    txt()
+    pen.ht()
+
+
 if __name__ == '__main__':
-    example04()
+    example06()
