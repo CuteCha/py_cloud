@@ -59,8 +59,38 @@ def debug():
     derivative()
 
 
+def fdm_u(h, N, x_lst, func, u0, du0):
+    B = np.array([[1, 0], [0, 1]])
+    phi = np.array([u0, du0])
+    res = list()
+    res.append(phi[0])
+    for i in range(N - 1):
+        F = np.array([func(x_lst[i]), 0])
+        phi = h * np.matmul(B, phi - F) + phi
+        res.append(phi[0])
+
+    return res
+
+
+def fdm_r_u(h, N, x_lst, func, u0, du0):
+    B = np.array([[1, 0], [0, 1]])
+    t = h / 2
+    A = np.array([[1, t], [t, 1]]) / (1 - t ** 2)
+    phi = np.array([u0, du0])
+    res = list()
+    res.append(phi[0])
+    for i in range(N - 1):
+        F_c = np.array([func(x_lst[i]), 0])
+        F_b = np.array([func(x_lst[i + 1]), 0])
+        phi = np.matmul(A, t * np.matmul(B, phi - F_c - F_b) + phi)
+        res.append(phi[0])
+
+    return res
+
+
 def main():
     u0 = 0.0
+    du0 = 0
     L = 1
     h = 0.01
     x = np.arange(0, L + h, h)
@@ -69,13 +99,17 @@ def main():
     print(x[:10])
     print(x[-10:])
     u_exact = exact_u(x)
-    u_fem = fem_u(x, force, h, N, u0)
+    # u_fem = fem_u(x, force, h, N, u0)
+    u_fdm = fdm_u(h, N, x, force, u0, du0)
+    u_fdm_r = fdm_r_u(h, N, x, force, u0, du0)
 
     plt.figure()
     plt.xlabel('x')
     plt.ylabel('u')
-    plt.plot(x, u_fem, 'bx', label="fem")
+    # plt.plot(x, u_fem, 'bx', label="fem")
     plt.plot(x, u_exact, 'r-', label="exact")
+    plt.plot(x, u_fdm, 'gx', label="fdm")
+    plt.plot(x, u_fdm_r, 'bo', label="fdm_r")
     plt.grid(True)
     plt.legend()
     plt.show()
