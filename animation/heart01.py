@@ -170,5 +170,44 @@ def example06():
     pen.ht()
 
 
+def example07():
+    alpha = 100
+    t = np.arange(0, 3, 0.001)
+    s = np.power(t, 2 / 3) + 0.9 * np.sqrt(3.3 - np.power(t, 2)) * np.sin(alpha * np.pi * t)
+    x = np.concatenate((-t[::-1], t[1:]))
+    y = np.concatenate((s[::-1], s[1:]))
+    plt.figure(figsize=(8, 8))
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.axis([-3, 3, -2, 4])
+    plt.plot(x, y, 'r-')
+    plt.grid(True)
+    plt.show()
+
+
+def example08():
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ln, = plt.plot([], [], 'r-')
+
+    def init():
+        ax.set_xlim(-3, 3)
+        ax.set_ylim(-2, 4)
+        return ln,
+
+    def update(frame):
+        alpha = frame
+        t = np.arange(0, 3, 0.001)
+        s = np.power(t, 2 / 3) + 0.9 * np.sqrt(3.3 - np.power(t, 2)) * np.sin(alpha * np.pi * t)
+        x = np.concatenate((-t[::-1], t[1:]))
+        y = np.concatenate((s[::-1], s[1:]))
+        ln.set_data(x, y)
+        return ln,
+
+    frames = np.linspace(0, 100, 128)
+    ani = FuncAnimation(fig, update, frames=frames, init_func=init, blit=True)
+    ani.save('./logs/heart_08.gif')
+    plt.show()
+
+
 if __name__ == '__main__':
-    example06()
+    example08()
