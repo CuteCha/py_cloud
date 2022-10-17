@@ -213,7 +213,7 @@ def example09():
     from math import pi, sin, cos
     X = []
     Y = []
-    n = 17  # int(input("正n边形："))
+    n = 17
     alpha = 2 * pi / n
 
     for i in range(0, n + 1):
