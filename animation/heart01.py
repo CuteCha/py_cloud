@@ -209,5 +209,22 @@ def example08():
     plt.show()
 
 
+def example09():
+    from math import pi, sin, cos
+    X = []
+    Y = []
+    n = 17  # int(input("正n边形："))
+    alpha = 2 * pi / n
+
+    for i in range(0, n + 1):
+        theta = alpha * i
+        X.append(sin(theta))
+        Y.append(cos(theta))
+
+    plt.plot(X, Y)
+    plt.axis('equal')
+    plt.show()
+
+
 if __name__ == '__main__':
-    example08()
+    example09()
