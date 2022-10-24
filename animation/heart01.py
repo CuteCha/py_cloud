@@ -215,9 +215,15 @@ def example09():
     Y = []
     n = 17
     alpha = 2 * pi / n
+    X.append(0.0)
+    Y.append(0.0)
 
     for i in range(0, n + 1):
         theta = alpha * i
+        X.append(sin(theta))
+        Y.append(cos(theta))
+        X.append(0.0)
+        Y.append(0.0)
         X.append(sin(theta))
         Y.append(cos(theta))
 
