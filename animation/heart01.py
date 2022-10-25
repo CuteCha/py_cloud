@@ -232,12 +232,32 @@ def example09():
     plt.show()
 
 
+# Bezout's Lemma
 def gcd(a, b):
     return a if b == 0 else gcd(b, a % b)
 
 
+# Extended Euclidean algorithm
+def ext_euclid(a, b):
+    old_s, s = 1, 0
+    old_t, t = 0, 1
+    old_r, r = a, b
+    if b == 0:
+        return 1, 0, a
+    else:
+        while r != 0:
+            q = old_r // r
+            old_r, r = r, old_r - q * r
+            old_s, s = s, old_s - q * s
+            old_t, t = t, old_t - q * t
+    print("a*s+b*t=d")
+    print(f"({a})*({old_s})+({b})*({old_t})={old_r}")
+    return old_s, old_t, old_r
+
+
 def example10():
     print(gcd(3, 10))
+    print(ext_euclid(3, 10))
 
 
 if __name__ == '__main__':
