@@ -232,5 +232,13 @@ def example09():
     plt.show()
 
 
+def gcd(a, b):
+    return a if b == 0 else gcd(b, a % b)
+
+
+def example10():
+    print(gcd(3, 10))
+
+
 if __name__ == '__main__':
-    example09()
+    example10()
