@@ -255,9 +255,27 @@ def ext_euclid(a, b):
     return old_s, old_t, old_r
 
 
+def compute_lcm1(x, y):
+    greater = x if x > y else y
+
+    while True:
+        if (greater % x == 0) and (greater % y == 0):
+            lcm = greater
+            break
+        greater += 1
+
+    return lcm
+
+
+def compute_lcm2(x, y):
+    return (x * y) // gcd(x, y)
+
+
 def example10():
     print(gcd(3, 10))
     print(ext_euclid(3, 10))
+    print(f"The L.C.M. is {compute_lcm1(54, 24)}")
+    print(f"The L.C.M. is {compute_lcm2(54, 24)}")
 
 
 if __name__ == '__main__':
