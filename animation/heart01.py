@@ -243,7 +243,7 @@ def ext_euclid(a, b):
     old_t, t = 0, 1
     old_r, r = a, b
     if b == 0:
-        return 1, 0, a
+        return old_s, old_t, old_r
     else:
         while r != 0:
             q = old_r // r
