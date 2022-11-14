@@ -1,7 +1,7 @@
 import socket
 
-address = ('9.134.163.105', 10000)  # local IP
-re_addr = ("10.78.26.29", 10000)  # target IP
+address = ('192.134.163.105', 10000)  # local IP
+re_addr = ("192.78.26.29", 10000)  # target IP
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
