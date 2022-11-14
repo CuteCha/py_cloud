@@ -49,5 +49,14 @@ def debug03():
     plt.show()
 
 
+def debug04():
+    x = input("content: ")
+    print(type(x))
+    print(x)
+    y = x.encode()
+    print(type(y))
+    print(y)
+
+
 if __name__ == '__main__':
-    debug03()
+    debug04()
