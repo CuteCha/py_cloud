@@ -22,7 +22,7 @@ def handle(client):
         try:
             message = client.recv(1024)
             broadcast(message)
-        except:
+        except Exception:
             index = clients.index(client)
             clients.remove(client)
             client.close()
