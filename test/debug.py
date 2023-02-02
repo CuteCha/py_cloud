@@ -80,6 +80,7 @@ def debug05():
     c.get_name()
     Car.fun()
     Car.get_name(c)
+    c.fun()
 
 
 if __name__ == '__main__':
