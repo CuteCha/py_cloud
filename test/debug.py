@@ -58,5 +58,29 @@ def debug04():
     print(y)
 
 
+class Car(object):
+    def __init__(self, name):
+        self.name = name
+
+    @staticmethod
+    def add_gas(v):
+        print(f"add gas {v}L")
+
+    def get_name(self):
+        print(f"name: {self.name}")
+
+    @classmethod
+    def fun(cls):
+        print(f"class method: {cls}")
+
+
+def debug05():
+    c = Car("benz")
+    c.add_gas(2)
+    c.get_name()
+    Car.fun()
+    Car.get_name(c)
+
+
 if __name__ == '__main__':
-    debug04()
+    debug05()
