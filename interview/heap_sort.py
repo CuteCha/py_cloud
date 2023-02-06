@@ -12,19 +12,22 @@ def swap(arr, i, j):
 
 
 def heapify(arr, arr_len, i):
+    if i > arr_len:
+        return
+
     left = 2 * i + 1
     right = 2 * i + 2
-    largest = i
+    max_idx = i
 
-    if left < arr_len and arr[left] > arr[largest]:
-        largest = left
+    if left < arr_len and arr[left] > arr[max_idx]:
+        max_idx = left
 
-    if right < arr_len and arr[right] > arr[largest]:
-        largest = right
+    if right < arr_len and arr[right] > arr[max_idx]:
+        max_idx = right
 
-    if largest != i:
-        swap(arr, i, largest)
-        heapify(arr, arr_len, largest)
+    if max_idx != i:
+        swap(arr, i, max_idx)
+        heapify(arr, arr_len, max_idx)
 
 
 def heap_sort(arr):
@@ -33,8 +36,7 @@ def heap_sort(arr):
 
     for i in range(arr_len - 1, 0, -1):
         swap(arr, 0, i)
-        arr_len -= 1
-        heapify(arr, arr_len, 0)
+        heapify(arr, i, 0)
 
 
 def main():
