@@ -127,13 +127,12 @@ class BagProblemSolution2(object):
 
 
 class Record(object):
-    def __init__(self, from_cap, idx_lst, max_val):
-        self.from_cap = from_cap
+    def __init__(self, idx_lst, max_val):
         self.idx_lst = idx_lst
         self.max_val = max_val
 
     def to_str(self):
-        return f"({self.from_cap},{self.idx_lst},{self.max_val})"
+        return f"({self.idx_lst},{self.max_val})"
 
 
 class BagProblemSolution3(object):
@@ -142,15 +141,14 @@ class BagProblemSolution3(object):
         self.v = vals
         self.capacity = capacity
         self.num = len(caps)
-        self.d = [Record(0, [], 0) for _ in range(capacity + 1)]
+        self.d = [Record([], 0) for _ in range(capacity + 1)]
 
     def cal_max_value(self):
         for i in range(self.num):
             for j in range(self.capacity, 0, -1):
-                if j >= self.c[i] and self.d[j - self.c[i]].max_val + self.v[i] > self.d[j].max_val:
-                    self.d[j].max_val = self.d[j - self.c[i]].max_val + self.v[i]
-                    from_cap = j - self.c[i]
-                    self.d[j].from_cap = from_cap
+                from_cap = j - self.c[i]
+                if from_cap >= 0 and self.d[from_cap].max_val + self.v[i] > self.d[j].max_val:
+                    self.d[j].max_val = self.d[from_cap].max_val + self.v[i]
                     self.d[j].idx_lst = self.d[from_cap].idx_lst + [i]
 
     def show_result(self):
