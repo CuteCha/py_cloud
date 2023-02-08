@@ -10,7 +10,7 @@ class BagProblemSolution(object):
         self.item = [0 for _ in range(self.num + 1)]
 
     def cal_max_value(self):
-        for i in range(self.num + 1):
+        for i in range(1, self.num + 1):
             for j in range(self.capacity + 1):
                 if j < self.c[i]:
                     self.dp[i][j] = self.dp[i - 1][j]
