@@ -1,4 +1,39 @@
 # -*- encoding:utf-8 -*-
+def bag_problem_solution():
+    c = [0, 2, 3, 4, 5]
+    v = [0, 3, 4, 5, 6]
+    capacity = 8
+    num = 4
+    dp = [[0 for _ in range(capacity + 1)] for _ in range(num + 1)]
+    item = [0 for _ in range(num + 1)]
+
+    def cal_max_value():
+        for i in range(5):
+            for j in range(capacity + 1):
+                if j < c[i]:
+                    dp[i][j] = dp[i - 1][j]
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - c[i]] + v[i])
+
+    def track_item(i, j):
+        if i >= 0:
+            if dp[i][j] == dp[i - 1][j]:
+                item[i] = 0
+                track_item(i - 1, j)
+            elif j - c[i] >= 0 and dp[i][j] == dp[i - 1][j - c[i]] + v[i]:
+                item[i] = 1
+                track_item(i - 1, j - c[i])
+
+    def show_result():
+        for each in dp:
+            print(each)
+        print("-" * 36)
+        print(item)
+
+    cal_max_value()
+    track_item(num, capacity)
+    show_result()
+
 
 class BagProblemSolution(object):
     def __init__(self, caps, vals, capacity):
@@ -118,8 +153,6 @@ class BagProblemSolution3(object):
                     self.d[j].from_cap = from_cap
                     self.d[j].idx_lst = self.d[from_cap].idx_lst + [i]
 
-            # print("\t".join([each.to_str() for each in self.d]))
-
     def show_result(self):
         print("=" * 36)
         print(f"max value: {self.d[-1].max_val}")
@@ -131,44 +164,7 @@ class BagProblemSolution3(object):
         self.show_result()
 
 
-def bag_problem_solution():
-    c = [0, 2, 3, 4, 5]
-    v = [0, 3, 4, 5, 6]
-    capacity = 8
-    num = 4
-    dp = [[0 for _ in range(capacity + 1)] for _ in range(num + 1)]
-    item = [0 for _ in range(num + 1)]
-
-    def cal_max_value():
-        for i in range(5):
-            for j in range(capacity + 1):
-                if j < c[i]:
-                    dp[i][j] = dp[i - 1][j]
-                else:
-                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - c[i]] + v[i])
-
-    def track_item(i, j):
-        if i >= 0:
-            if dp[i][j] == dp[i - 1][j]:
-                item[i] = 0
-                track_item(i - 1, j)
-            elif j - c[i] >= 0 and dp[i][j] == dp[i - 1][j - c[i]] + v[i]:
-                item[i] = 1
-                track_item(i - 1, j - c[i])
-
-    def show_result():
-        for each in dp:
-            print(each)
-        print("-" * 36)
-        print(item)
-
-    cal_max_value()
-    track_item(num, capacity)
-    show_result()
-
-
 def main():
-    # bag_problem_solution()
     caps = [2, 4, 5, 6, 10, 3]  # [2, 3, 4, 5]  #
     vals = [1, 7, 4, 5, 11, 1]  # [3, 4, 5, 6]  #
     capacity = 7
