@@ -43,6 +43,54 @@ class BagProblemSolution(object):
         self.show_result()
 
 
+class BagProblemSolution2(object):
+    def __init__(self, caps, vals, capacity):
+        self.c = caps
+        self.v = vals
+        self.capacity = capacity
+        self.num = len(caps)
+        self.dp = [[0 for _ in range(self.capacity + 1)] for _ in range(self.num)]
+        self.rec = [[0 for _ in range(self.capacity + 1)] for _ in range(self.num)]
+        self.item = [0 for _ in range(self.num)]
+
+    def cal_max_value(self):
+        for j in range(self.capacity + 1):
+            if self.v[0] < j:
+                self.dp[0][j] = self.v[0]
+                self.rec[0][j] = 1
+
+        for i in range(1, self.num):
+            for j in range(self.capacity + 1):
+                if j >= self.c[i] and self.dp[i - 1][j - self.c[i]] + self.v[i] > self.dp[i - 1][j]:
+                    self.dp[i][j] = self.dp[i - 1][j - self.c[i]] + self.v[i]
+                    self.rec[i][j] = 1
+                else:
+                    self.dp[i][j] = self.dp[i - 1][j]
+
+    def track_item(self):
+        t = self.capacity
+        for i in range(self.num - 1, -1, -1):
+            if self.rec[i][t] == 1:
+                self.item[i] = 1
+                t -= self.c[i]
+
+    def show_result(self):
+        for each in self.dp:
+            print(each)
+
+        print("=" * 36)
+        print(f"max value: {self.dp[-1][-1]}")
+        print("-" * 36)
+        print(f"item: {self.item}")
+        for each in self.rec:
+            print(each)
+
+    def run(self):
+        self.cal_max_value()
+        self.track_item()
+        self.show_result()
+
+
 def bag_problem_solution():
     c = [0, 2, 3, 4, 5]
     v = [0, 3, 4, 5, 6]
@@ -81,10 +129,11 @@ def bag_problem_solution():
 
 def main():
     # bag_problem_solution()
-    caps = [2, 3, 4, 5]
-    vals = [3, 4, 5, 6]
+    caps = [2, 4, 5, 6, 10, 3]  # [2, 3, 4, 5]
+    vals = [1, 7, 4, 5, 11, 1]  # [3, 4, 5, 6]
     capacity = 8
     BagProblemSolution(caps, vals, capacity).run()
+    BagProblemSolution2(caps, vals, capacity).run()
 
 
 if __name__ == '__main__':
