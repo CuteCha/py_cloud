@@ -226,8 +226,54 @@ def complete_bag_problem_test():
     print("done")
 
 
+class MultiBagProblemSolution(object):
+    def __init__(self, caps, vals, nums, capacity):
+        self.capacity = capacity
+        self.items = []
+        self.num = 0
+        self.gen_item(caps, vals, nums, capacity)
+        self.d = [Record([], 0) for _ in range(capacity + 1)]
+
+    def gen_item(self, caps, vals, nums, capacity):
+        num = len(caps)
+        for i in range(num):
+            n = min(capacity // caps[i], nums[i])
+            if n < 1:
+                continue
+            for k in range(1, n + 1):
+                self.items.append(Item(i, k, k * caps[i], k * vals[i]))
+                self.num += 1
+
+    def cal_max_value(self):
+        for i in range(self.num):
+            for j in range(self.capacity, 0, -1):
+                from_cap = j - self.items[i].c
+                if from_cap >= 0 and self.d[from_cap].max_val + self.items[i].v > self.d[j].max_val:
+                    self.d[j].max_val = self.d[from_cap].max_val + self.items[i].v
+                    self.d[j].idx_lst = self.d[from_cap].idx_lst + [(self.items[i].idx, self.items[i].num)]
+
+    def show_result(self):
+        print("=" * 36)
+        print(f"max value: {self.d[-1].max_val}")
+        print("-" * 36)
+        print(f"item: {self.d[-1].idx_lst}")
+
+    def run(self):
+        self.cal_max_value()
+        self.show_result()
+
+
+def multi_bag_problem_test():
+    caps = [2, 3, 4, 5]  # [2, 3, 4, 5]
+    vals = [50, 160, 180, 190]  # [30, 50, 100, 200]
+    nums = [4, 1, 2, 1]
+    capacity = 8
+    MultiBagProblemSolution(caps, vals, nums, capacity).run()
+    print("done")
+
+
 def main():
-    complete_bag_problem_test()
+    multi_bag_problem_test()
 
 
 if __name__ == '__main__':
