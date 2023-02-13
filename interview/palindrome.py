@@ -26,9 +26,27 @@ def is_palindrome2(n):
     return rever == n or rever // 10 == n
 
 
+def is_palindrome_str(s):
+    l, r = 0, len(s) - 1
+    res = True
+    while l < r:
+        if s[l] == s[r]:
+            l += 1
+            r -= 1
+        else:
+            res = False
+            break
+
+    return res
+
+
 def main():
-    print(is_palindrome2(56765))
-    print(is_palindrome2(56763))
+    # print(is_palindrome2(56765))
+    # print(is_palindrome2(56763))
+    print(is_palindrome_str("abc"))
+    print(is_palindrome_str("aba"))
+    print(is_palindrome_str("abba"))
+    print(is_palindrome_str("b"))
 
 
 if __name__ == '__main__':
