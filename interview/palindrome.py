@@ -40,13 +40,62 @@ def is_palindrome_str(s):
     return res
 
 
+def longest_palindrome(s):
+    """
+    d[i]代表s[:i]的最长回文子串的长度
+    递推公式:
+          d[i-1]+2,  s[i-l-1:i+1]回文;
+    d[i]= d[i-1]+1,  s[i-l:i+1]回文;
+          d[i-1],    其他;
+    """
+    n = len(s)
+    l = 0
+    start = 0
+    for i in range(n):
+        print("-" * 36)
+        print(f"1. i={i}, l={l}, start={start}")
+        if i - l >= 1 and s[i - l - 1: i + 1] == s[i - l - 1: i + 1][::-1]:
+            start = i - l - 1
+            l += 2
+            print(f"2. i={i}, l={l}, start={start}")
+            continue
+
+        if i - l >= 0 and s[i - l: i + 1] == s[i - l: i + 1][::-1]:
+            start = i - l
+            l += 1
+            print(f"3. i={i}, l={l}, start={start}")
+
+        print("=" * 36)
+    return s[start: start + l]
+
+
+def longest_palindrome2(s):
+    n = len(s)
+    l = 0
+    start = 0
+    dp = [[False for _ in range(n)] for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if (i - j) < 2:
+                dp[j][i] = (s[i] == s[j])
+            else:
+                dp[j][i] = dp[j + 1][i - 1] and s[i] == s[j]
+
+            if dp[j][i] and (i - j + 1) > l:
+                l = i - j + 1
+                start = j
+
+    return s[start: start + l]
+
+
 def main():
     # print(is_palindrome2(56765))
     # print(is_palindrome2(56763))
-    print(is_palindrome_str("abc"))
-    print(is_palindrome_str("aba"))
-    print(is_palindrome_str("abba"))
-    print(is_palindrome_str("b"))
+    # print(is_palindrome_str("abc"))
+    # print(is_palindrome_str("aba"))
+    # print(is_palindrome_str("abba"))
+    # print(is_palindrome_str("b"))
+    print(longest_palindrome("xaxbbab"))
 
 
 if __name__ == '__main__':
