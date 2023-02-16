@@ -272,8 +272,73 @@ def multi_bag_problem_test():
     print("done")
 
 
+class BagProblem(object):
+    """
+    prob_type==0: 0/1 bag problem
+    prob_type==1 and nums is None: complete bag problem
+    prob_type==1 and nums is not None: multiple bag problem
+    """
+
+    def __init__(self, capacity, caps, vals, prob_type=0, nums=None):
+        self.capacity = capacity
+        self.items = []
+        self.num = 0
+        self.gen_item(capacity, caps, vals, prob_type, nums)
+        self.d = [Record([], 0) for _ in range(capacity + 1)]
+
+    @staticmethod
+    def gen_upper_nums(capacity, caps, prob_type, nums):
+        if prob_type == 0:
+            return [min(capacity // c, 1) for c in caps]
+        elif prob_type == 1:
+            n = len(caps)
+            if nums is not None:
+                return [min(capacity // caps[i], nums[i]) for i in range(n)]
+            else:
+                return [capacity // caps[i] for i in range(n)]
+
+    def gen_item(self, capacity, caps, vals, prob_type, nums):
+        num = len(caps)
+        upper_nums = self.gen_upper_nums(capacity, caps, prob_type, nums)
+        for i in range(num):
+            n = upper_nums[i]
+            if n < 1:
+                continue
+            for k in range(1, n + 1):
+                self.items.append(Item(i, k, k * caps[i], k * vals[i]))
+                self.num += 1
+
+    def cal_max_value(self):
+        for i in range(self.num):
+            for j in range(self.capacity, 0, -1):
+                from_cap = j - self.items[i].c
+                if from_cap >= 0 and self.d[from_cap].max_val + self.items[i].v > self.d[j].max_val:
+                    self.d[j].max_val = self.d[from_cap].max_val + self.items[i].v
+                    self.d[j].idx_lst = self.d[from_cap].idx_lst + [(self.items[i].idx, self.items[i].num)]
+
+    def show_result(self):
+        print("=" * 36)
+        print(f"max value: {self.d[-1].max_val}")
+        print("-" * 36)
+        print(f"item[(idx, num)]: {self.d[-1].idx_lst}")
+
+    def run(self):
+        self.cal_max_value()
+        self.show_result()
+
+
+def bag_problem_test02():
+    caps = [2, 3, 4, 5]  # [2, 3, 4, 5]
+    vals = [50, 160, 180, 190]  # [30, 50, 100, 200]
+    nums = None  # [4, 1, 2, 1]
+    capacity = 8
+    prob_type = 1
+    BagProblem(capacity, caps, vals, prob_type, nums).run()
+    print("done")
+
+
 def main():
-    multi_bag_problem_test()
+    bag_problem_test02()
 
 
 if __name__ == '__main__':
