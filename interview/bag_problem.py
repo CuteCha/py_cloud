@@ -330,9 +330,11 @@ class BagProblem(object):
 def bag_problem_test02():
     caps = [2, 3, 4, 5]  # [2, 3, 4, 5]
     vals = [50, 160, 180, 190]  # [30, 50, 100, 200]
-    nums = None  # [4, 1, 2, 1]
+    nums = [4, 1, 2, 1]
     capacity = 8
     prob_type = 1
+    BagProblem(capacity, caps, vals).run()
+    BagProblem(capacity, caps, vals, prob_type).run()
     BagProblem(capacity, caps, vals, prob_type, nums).run()
     print("done")
 
