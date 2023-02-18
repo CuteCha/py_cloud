@@ -103,17 +103,18 @@ def show_result():
         res[k]["x"].append(r_emb[i][0])
         res[k]["y"].append(r_emb[i][1])
 
-    fig, ax = plt.subplots()
-    # plt.figure(figsize=(12, 12))
+    # fig, ax = plt.subplots()
+    plt.figure(figsize=(12, 12))
 
     for k in range(10):
         # plt.scatter(res[k]["x"], res[k]["y"], c=color[k], marker="x")
-        ax.scatter(res[k]["x"], res[k]["y"], c=color[k])
+        plt.scatter(res[k]["x"], res[k]["y"], c=color[k], label=k)
 
     # for k in range(10):
     #     for i in range(len(res[k]["x"])):
     #         ax.annotate(i, (res[k]["x"][i], res[k]["y"][i]))
 
+    plt.legend()
     plt.show()
 
 
