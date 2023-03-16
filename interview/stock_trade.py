@@ -29,9 +29,23 @@ def cal_max_ret(arr):
     return mav_val, min_idx, sale_idx
 
 
+def cal_max_sum_ret(arr):
+    pre_ret = 0
+    cur_ret = 0
+    for i in range(len(arr) - 1):
+        if arr[i + 1] > arr[i]:
+            cur_ret = pre_ret + arr[i + 1] - arr[i]
+            pre_ret = cur_ret
+        else:
+            cur_ret = pre_ret
+
+    return cur_ret
+
+
 def main():
     arr = [2, 2, 6, 2, 1, 9, 3]
     print(cal_max_ret(arr))
+    print(cal_max_sum_ret(arr))
 
 
 if __name__ == '__main__':
