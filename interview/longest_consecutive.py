@@ -63,21 +63,22 @@ def longest_consecutive3(arr):
     max_ele = -1
     d = dict()
     for i in arr:
-        if i not in d:
-            l = 0
-            r = 0
-            if (i - 1) in d:
-                l = d.get(i - 1)
-            if (i + 1) in d:
-                r = d.get(i + 1)
-            s = l + r
-            d[i] = s + 1
-            d[i - l] = s + 1
-            d[i + r] = s + 1
+        if i in d: continue
 
-            if s + 1 > max_len:
-                max_len = s + 1
-                max_ele = i + r
+        l = 0
+        r = 0
+        if (i - 1) in d:
+            l = d.get(i - 1)
+        if (i + 1) in d:
+            r = d.get(i + 1)
+        s = l + r
+        d[i] = s + 1
+        d[i - l] = s + 1
+        d[i + r] = s + 1
+
+        if s + 1 > max_len:
+            max_len = s + 1
+            max_ele = i + r
 
     return max_len, max_ele
 
