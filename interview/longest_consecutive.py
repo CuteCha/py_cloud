@@ -55,6 +55,33 @@ def longest_consecutive2(arr):
     return max_val, max_ele
 
 
+def longest_consecutive3(arr):
+    if arr is None or len(arr) == 0:
+        return None
+
+    max_len = -1
+    max_ele = -1
+    d = dict()
+    for i in arr:
+        if i not in d:
+            l = 0
+            r = 0
+            if (i - 1) in d:
+                l = d.get(i - 1)
+            if (i + 1) in d:
+                r = d.get(i + 1)
+            s = l + r
+            d[i] = s + 1
+            d[i - l] = s + 1
+            d[i + r] = s + 1
+
+            if s + 1 > max_len:
+                max_len = s + 1
+                max_ele = i + r
+
+    return max_len, max_ele
+
+
 def go_step(n):
     if n < 3:
         return n
@@ -80,7 +107,7 @@ def go_step2(n):
 
 def main():
     arr = [100, 4, 200, 2, 3, 2]
-    print(longest_consecutive2(arr))
+    print(longest_consecutive3(arr))
     print(list(map(lambda x: go_step2(x), range(1, 7))))
     print(list(map(lambda x: go_step(x), range(1, 7))))
 
