@@ -49,12 +49,36 @@ def top_k(arr, k):
     return arr[:k]
 
 
+def find_idx(arr, target, start, end):
+    if start >= end and arr[start] != target:
+        return -1
+
+    p = (start + end) // 2
+    if arr[p] == target:
+        return p
+
+    if arr[start] <= arr[p]:
+        if arr[start] <= target < arr[p]:
+            return find_idx(arr, target, start, p - 1)
+        else:
+            return find_idx(arr, target, p + 1, end)
+    else:
+        if arr[p] < target <= arr[end]:
+            return find_idx(arr, target, p + 1, end)
+        else:
+            return find_idx(arr, target, start, p - 1)
+
+
 def main():
     arr = [3, 1, 5, 9, 2, 3, 5, 8, 4, 6, 7]
     print(top_k(arr, 7))
     arr = [3, 1, 5, 9, 2, 3, 5, 8, 4, 6, 7]
     quick_sort(arr, 0, len(arr) - 1)
     print(arr)
+
+    arr2 = [4, 5, 6, 7, 0, 1, 2]
+    print(find_idx(arr2, 0, 0, 6))
+    print(find_idx(arr2, 3, 0, 6))
 
 
 if __name__ == '__main__':
