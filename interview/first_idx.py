@@ -16,27 +16,6 @@ def search0(arr, target):
         return -1
 
 
-'''
-while(l<=h){
-            mid = (l+h)/2;
-            if(nums[mid] == target){
-                while(mid != 0 && nums[mid]==nums[mid-1]){
-                    mid--;
-                }
-                return mid;
-            }
-            else if(nums[mid]>target){
-                h = mid-1;
-            }
-            else{
-                l = mid+1;
-            }
-        }
-        return -1; //查找失败
-
-'''
-
-
 def search(arr, target):
     left = 0
     right = len(arr) - 1
