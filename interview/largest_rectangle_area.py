@@ -66,11 +66,28 @@ def largest_rectangle_area3(heights) -> int:
     return res
 
 
+def trap_rain_water(height):
+    res = 0
+    stack = []
+    for idx, val in enumerate(height):
+        while stack and val > height[stack[-1]]:
+            top = stack.pop()
+            if not stack:
+                break
+            dis = idx - stack[-1] - 1
+            h = min(val, height[stack[-1]])
+            bound = h - height[top]
+            res += bound * dis
+        stack.append(idx)
+    return res
+
+
 def main():
     arr = [2, 1, 5, 6, 2, 3]
     print(largest_rectangle_area(arr))
     print(largest_rectangle_area2(arr))
     print(largest_rectangle_area3(arr))
+    print(trap_rain_water(arr))
 
 
 if __name__ == '__main__':
