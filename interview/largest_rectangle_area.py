@@ -82,12 +82,26 @@ def trap_rain_water(height):
     return res
 
 
+def trap_rain_water2(height):
+    res = 0
+    stack = []
+    for r in range(len(height)):
+        while stack and height[r] > height[stack[-1]]:
+            cur = stack.pop()
+            if not stack:
+                break
+            dis = r - stack[-1] - 1
+            res += (min(height[r], height[stack[-1]]) - height[cur]) * dis
+        stack.append(r)
+    return res
+
+
 def main():
     arr = [2, 1, 5, 6, 2, 3]
     print(largest_rectangle_area(arr))
     print(largest_rectangle_area2(arr))
     print(largest_rectangle_area3(arr))
-    print(trap_rain_water(arr))
+    print(trap_rain_water2(arr))
 
 
 if __name__ == '__main__':
