@@ -202,6 +202,33 @@ class GenOpt(object):
             result = copy.deepcopy(self.best_individual)
             self.his_best_individual_lst.append(result)
 
+    def show_route(self):
+        perm = self.best_individual.perm
+        x = [self.position[i][0] for i in perm]
+        y = [self.position[i][1] for i in perm]
+
+        plt.figure(figsize=(6, 6))
+        plt.scatter(x, y, c='r')
+        # plt.plot(x, y, 'r-o')
+
+        n = len(x)
+        for i in range(n):
+            plt.annotate(i, (x[i], y[i]))
+
+        for i in range(n - 1):
+            dx = x[i + 1] - x[i]
+            dy = y[i + 1] - y[i]
+            plt.quiver(x[i], y[i], dx, dy, angles='xy', scale=1.03, scale_units='xy', width=0.005, color='b')
+
+        plt.title("opt route")
+        plt.show()
+
+    def show_his_fitness(self):
+        plt.figure(figsize=(6, 6))
+        plt.plot([ind.fitness for ind in self.his_best_individual_lst])
+        plt.title("history fitness")
+        plt.show()
+
 
 def reservoir_sampling(individual_lst, m):
     import heapq
@@ -251,7 +278,8 @@ def main():
     gen_opt = GenOpt(position)
     gen_opt.run()
     print(f"{gen_opt.best_individual.fitness}\n{gen_opt.best_individual.perm}")
-    show_route(position, gen_opt.best_individual.perm)
+    gen_opt.show_route()
+    gen_opt.show_his_fitness()
 
 
 if __name__ == '__main__':
