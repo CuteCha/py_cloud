@@ -17,7 +17,7 @@ class ProductOfNumbers(object):
 
     def get_product(self, k):
         if k > self.idx:
-            print(f"ERROR! k lt largest")
+            print(f"ERROR! k={k} lt num of element {self.idx}")
             return None
         elif self.zero_idx >= self.idx - k:
             return 0
@@ -29,11 +29,10 @@ class ProductOfNumbers(object):
 
 def main():
     pn = ProductOfNumbers()
-    pn.add(1)
-    pn.add(2)
-    pn.add(0)
-    pn.add(2)
-    pn.add(3)
+    arr = [1, 2, 0, 2, 3]
+    for i in arr:
+        pn.add(i)
+
     print(pn.get_product(2))
     print(pn.get_product(4))
     print(pn.get_product(6))
