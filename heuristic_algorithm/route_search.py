@@ -220,26 +220,26 @@ class GenOpt(object):
 
         n = self.best_individual.idx + 1
         for i in range(n):
-            plt.annotate(i, (x[i], y[i]))
+            plt.annotate(f"P{perm[i]}(R{i})", (x[i], y[i]))
 
         for i in range(n - 1):
             dx = x[i + 1] - x[i]
             dy = y[i + 1] - y[i]
             plt.quiver(x[i], y[i], dx, dy, angles='xy', scale=1.03, scale_units='xy', width=0.005, color='b')
 
-        plt.title("opt route")
+        plt.title(f"opt route(n={self.num_point},W={self.max_mileage})")
         plt.show()
 
     def show_his_fitness(self):
         plt.figure(figsize=(6, 6))
         plt.plot([ind.fitness for ind in self.his_best_individual_lst])
-        plt.title("history fitness")
+        plt.title(f"history fitness(n={self.num_point},W={self.max_mileage})")
         plt.show()
 
 
 def main():
     position = get_position(7, 97)
-    mileage = 1.5
+    mileage = None  # 1.5
 
     brute_opt = BruteOpt(position, mileage)
     brute_opt.run()
