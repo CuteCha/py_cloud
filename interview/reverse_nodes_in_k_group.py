@@ -65,5 +65,106 @@ def main():
         reverse_node = reverse_node.next
 
 
+# 打印链表的实用功能
+def print_list(msg, head):
+    print(msg, end=': ')
+    ptr = head
+    while ptr:
+        print(ptr.data, end=' —> ')
+        ptr = ptr.next
+    print('None')
+
+
+class Node:
+    def __init__(self, data=None, d_next=None):
+        self.data = data
+        self.next = d_next
+
+
+def reverse(head, m, n):
+    if m > n:
+        return head
+
+    prev = None
+    curr = head
+
+    i = 1
+    while curr is not None and i < m:
+        prev = curr
+        curr = curr.next
+        i = i + 1
+
+    start = curr
+    end = None
+
+    while curr is not None and i <= n:
+        t_next = curr.next
+        curr.next = end
+        end = curr
+        curr = t_next
+        i = i + 1
+
+    if start:
+        start.next = curr
+        if prev is None:
+            head = end
+        else:
+            prev.next = end
+
+    return head
+
+
+def reverse2(head: Node, m: int, n: int) -> Node:
+    if not head or not head.next or m >= n:
+        return head
+
+    dummy = Node(0)
+    dummy.next = head
+    start = dummy
+    for i in range(m - 1):
+        start = start.next
+
+    end = cur = start.next
+    pre = None
+    for i in range(n - m + 1):
+        t_next = cur.next
+        cur.next = pre
+        pre = cur
+        cur = t_next
+    start.next = pre
+    end.next = cur
+
+    return dummy.next
+
+
+def reverse3(head):
+    if head is None or head.next is None:
+        return head
+
+    pre = None
+    cur = head
+    h = head
+    while cur:
+        h = cur
+        tmp = cur.next
+        cur.next = pre
+        pre = cur
+        cur = tmp
+    return h
+
+
+def main2():
+    head = None
+    for i in reversed(range(7)):
+        head = Node(i + 1, head)
+
+    (m, n) = (2, 5)
+
+    print_list('Original linked list', head)
+    # head = reverse2(head, m, n)
+    head = reverse3(head)
+    print_list('Reversed linked list', head)
+
+
 if __name__ == '__main__':
-    main()
+    main2()
