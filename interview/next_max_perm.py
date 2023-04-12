@@ -30,7 +30,7 @@ def next_perm(arr):
 
 
 def main():
-    arr = [1, 2, 3]
+    arr = [1, 2, 4, 6, 5, 3, 2, 1]  # [1, 2, 3]
     print(next_perm(arr))
 
 
