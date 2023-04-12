@@ -153,6 +153,56 @@ def reverse3(head):
     return h
 
 
+def reverse4(head):
+    if head is None or head.next is None:
+        return head
+
+    pre = None
+    cur = head
+    h = head
+    print("=" * 72)
+    print_list("h", h)
+    print_list("cur", cur)
+    print_list("pre", pre)
+    while cur:
+        h = cur
+        tmp = h.next
+        h.next = pre
+        pre = h
+        cur = tmp
+        print("=" * 72)
+        print_list("h", h)
+        print_list("cur", cur)
+        print_list("pre", pre)
+        print_list("tmp", tmp)
+
+        # print(f"cur={cur.data if cur else cur}")
+        # print(f"pre={pre.data}")
+    return h
+
+
+def reverse5(head):
+    if head is None or head.next is None:
+        return head
+
+    pre = None
+    cur = head
+
+    while cur:
+        tmp = cur.next
+        cur.next = pre
+        pre = cur
+        cur = tmp
+        print("=" * 72)
+        print_list("cur", cur)
+        print_list("pre", pre)
+        print_list("tmp", tmp)
+
+        # print(f"cur={cur.data if cur else cur}")
+        # print(f"pre={pre.data}")
+    return pre
+
+
 def main2():
     head = None
     for i in reversed(range(7)):
@@ -162,8 +212,8 @@ def main2():
 
     print_list('Original linked list', head)
     # head = reverse2(head, m, n)
-    head = reverse3(head)
-    print_list('Reversed linked list', head)
+    head = reverse5(head)
+    # print_list('Reversed linked list', head)
 
 
 if __name__ == '__main__':
