@@ -63,9 +63,9 @@ def parse_fill_blank_paragraph(paragraph):
 
 def get_fill_blank(doc):
     tk1 = doc.paragraphs[3:(3 + 41)]  # 41
-    tk2 = doc.paragraphs[519:(519 + 28)]  # 28
-    tk3 = doc.paragraphs[706:(706 + 95)]  # 95
-    tk = tk1 + tk2 + tk3
+    tk2 = doc.paragraphs[510:(510 + 28)]  # 28
+    tk3 = doc.paragraphs[697:(697 + 95)]  # 95
+    tk = tk1# + tk2 + tk3
 
     for paragraph in tk:
         print(f"ori: {paragraph.text}")
@@ -165,13 +165,42 @@ def get_multiple_select(doc):
         print(f"gen: {content}\n\tans: {answer}")
 
 
+def parse_short_answer(paragraphs):
+    content = paragraphs[0].text
+    answer = "\n".join([each.text for each in paragraphs[1:]])
+    return content, answer
+
+
+def get_short_answer(doc):
+    jd1 = doc.paragraphs[499:(499 + 4 * 2)]
+    jd2 = doc.paragraphs[669:694]
+    jd3 = doc.paragraphs[1338:1374]
+    jd = jd1 + jd2 + jd3
+
+    for paragraph in jd:
+        print(f"{paragraph.text}")
+
+    pattern = "^\d+\."
+    topic_idx = []
+    for k, paragraph in enumerate(jd):
+        if re.match(pattern, paragraph.text):
+            topic_idx.append(k)
+    topic_idx.append(len(jd))
+
+    for i in range(len(topic_idx) - 1):
+        print(f"ori: {jd[topic_idx[i]].text}")
+        content, answer = parse_short_answer(jd[topic_idx[i]:topic_idx[i + 1]])
+        print(f"gen: {content}\n\tans: {answer}")
+
+
 def main():
     filename = "/Users/cxq/Desktop/abc.docx"
     doc = docx.Document(filename)
-    # get_fill_blank(doc)
+    get_fill_blank(doc)
     # get_judge(doc)
     # get_single_select(doc)
-    get_multiple_select(doc)
+    # get_multiple_select(doc)
+    # get_short_answer(doc)
 
 
 if __name__ == '__main__':
