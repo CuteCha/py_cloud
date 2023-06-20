@@ -146,11 +146,19 @@ class BMTest(object):
         for content, answer in exams:
             print(f"{content}\nans: {answer}\n---------")
 
+    def exe(self):
+        exams = self.gen_examination()
+        for content, answer in exams:
+            print(f"{content}\n")
+            your_answer = input("give your answer:")
+            print(f"correct: {answer}")
+            print("-" * 72)
+
 
 def main():
     filename = "/Users/cxq/Desktop/abc.docx"
     ex_test = BMTest(file_name=filename)
-    ex_test.run()
+    ex_test.exe()
 
 
 if __name__ == '__main__':
