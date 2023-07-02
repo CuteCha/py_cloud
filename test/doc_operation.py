@@ -196,11 +196,11 @@ def get_short_answer(doc):
 def main():
     filename = "/Users/cxq/Desktop/abc.docx"
     doc = docx.Document(filename)
-    get_fill_blank(doc)
+    # get_fill_blank(doc)
     # get_judge(doc)
     # get_single_select(doc)
     # get_multiple_select(doc)
-    # get_short_answer(doc)
+    get_short_answer(doc)
 
 
 if __name__ == '__main__':
