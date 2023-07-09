@@ -6,17 +6,19 @@ def stat_parameter(num_token, seq_len, emb_dim, h_dim, v_dim, num_head, f_dim, n
     ln_parameter = 4 * emb_dim
     cls_parameter = emb_dim * num_token + num_token
 
-    total_parameter = emb_parameter + (multi_head_parameter + ffn_parameter + ln_parameter) * num_block + cls_parameter
+    pre_model_parameter = emb_parameter + (multi_head_parameter + ffn_parameter + ln_parameter) * num_block
+    total_parameter = pre_model_parameter + cls_parameter
 
-    print(f"emb_parameter: {format(emb_parameter / total_parameter, '.2%')}, {format(emb_parameter, ',.1f')}\n"
-          f"multi_head_parameter: {format(multi_head_parameter * num_block / total_parameter, '.2%')}, "
+    print(f"emb_parameter: {format(emb_parameter / pre_model_parameter, '.2%')}, {format(emb_parameter, ',.1f')}\n"
+          f"multi_head_parameter: {format(multi_head_parameter * num_block / pre_model_parameter, '.2%')}, "
           f"{format(multi_head_parameter * num_block, ',.1f')}, {multi_head_parameter}\n"
-          f"ffn_parameter: {format(ffn_parameter * num_block / total_parameter, '.2%')}, "
+          f"ffn_parameter: {format(ffn_parameter * num_block / pre_model_parameter, '.2%')}, "
           f"{format(ffn_parameter * num_block, ',.1f')}, {ffn_parameter}\n"
-          f"ln_parameter: {format(ln_parameter * num_block / total_parameter, '.2%')}, "
+          f"ln_parameter: {format(ln_parameter * num_block / pre_model_parameter, '.2%')}, "
           f"{format(ln_parameter * num_block, ',.1f')}, {ln_parameter}\n"
-          f"cls_parameter: {format(cls_parameter / total_parameter, '.2%')}, "
+          f"cls_parameter: {format(cls_parameter / pre_model_parameter, '.2%')}, "
           f"{format(cls_parameter, ',.1f')}, {cls_parameter}\n"
+          f"pre_model_parameter: {format(pre_model_parameter, ',.1f')}\n"
           f"total_parameter: {format(total_parameter, ',.2f')}")
 
 
