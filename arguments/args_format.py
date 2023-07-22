@@ -22,5 +22,16 @@ def main():
     print(args_obj.ckpt_dir)
 
 
+def debug_assert(a, b):
+    assert a > b, f"{a} lt {b}"
+    print(a - b)
+
+
+def run_debug00():
+    debug_assert(2, 1)
+    debug_assert(1, 2)
+    debug_assert(1, 1)
+
+
 if __name__ == '__main__':
     main()
