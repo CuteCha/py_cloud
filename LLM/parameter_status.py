@@ -22,6 +22,24 @@ def stat_parameter(num_token, seq_len, emb_dim, h_dim, v_dim, num_head, f_dim, n
           f"total_parameter: {format(total_parameter, ',.2f')}")
 
 
+def stat_ops(num_token, batch_size, seq_len, emb_dim, h_dim, v_dim, num_head, f_dim, num_block, total_token):
+    qkv_ops = 2 * 2 * batch_size * seq_len * emb_dim * h_dim + 2 * batch_size * seq_len * emb_dim * v_dim
+    multi_head_ops = qkv_ops * num_head + 2 * batch_size * seq_len * v_dim * emb_dim
+    ffn_ops = 2 * batch_size * seq_len * emb_dim * f_dim + 2 * batch_size * seq_len * f_dim * emb_dim
+    cls_ops = 2 * batch_size * seq_len * emb_dim * num_token
+
+    pre_model_ops = (multi_head_ops + ffn_ops) * num_block
+    one_step_ops = pre_model_ops + cls_ops
+    one_step_ops = num_block * (24 * batch_size * seq_len * emb_dim ** 2 + 4 * batch_size * seq_len ** 2 * emb_dim) \
+                   + 2 * batch_size * seq_len * emb_dim * num_token
+    total_ops = 3 * one_step_ops * total_token / (batch_size * seq_len)
+
+    print("-" * 72 +
+          f"\npre_model_ops: {format(pre_model_ops)}\n"
+          f"one step ops: {format(one_step_ops)}\n"
+          f"total ops: {total_ops}")
+
+
 def main():
     # num_token = 50257
     # seq_len = 1024
@@ -43,16 +61,19 @@ def main():
     num_block = 12
 
     # GPT
-    # num_token = 50257
-    # seq_len = 1024
-    # num_head = 32
-    # emb_dim = 1024
-    # h_dim = emb_dim / num_head
-    # v_dim = emb_dim / num_head
-    # f_dim = 4 * emb_dim
-    # num_block = 96
+    num_token = 50257
+    batch_size = 32768
+    seq_len = 2048
+    num_head = 96
+    emb_dim = 12288
+    h_dim = emb_dim / num_head
+    v_dim = emb_dim / num_head
+    f_dim = 4 * emb_dim
+    num_block = 96
+    total_token = 300 * 1e9
 
     stat_parameter(num_token, seq_len, emb_dim, h_dim, v_dim, num_head, f_dim, num_block)
+    stat_ops(num_token, batch_size, seq_len, emb_dim, h_dim, v_dim, num_head, f_dim, num_block, total_token)
 
 
 if __name__ == '__main__':
