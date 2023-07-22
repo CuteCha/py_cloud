@@ -20,6 +20,8 @@ def main():
     print(args_obj.pb_model)  # --pb-model
     print(args_obj.h5_model)  # --h5_model
     print(args_obj.ckpt_dir)
+    ap.attr = 0
+    print(ap.attr)
 
 
 def debug_assert(a, b):
