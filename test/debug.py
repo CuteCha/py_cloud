@@ -83,5 +83,20 @@ def debug05():
     c.fun()
 
 
+def debug06():
+    from pdf2docx import parse
+    import os
+
+    BASE_DIR = f"{os.path.dirname(os.getcwd())}/data/pdf"
+    print(BASE_DIR)
+    input_file = f"{BASE_DIR}/pc.pdf"
+    output_file = f"{BASE_DIR}/pc.docx"
+    result = parse(
+        pdf_file=input_file,
+        docx_file=output_file
+    )
+    print(result)
+
+
 if __name__ == '__main__':
-    debug05()
+    debug06()
