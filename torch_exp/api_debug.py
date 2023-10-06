@@ -39,8 +39,22 @@ def loss_check():
 
 def parameter_grad():
     weight = torch.nn.Parameter(torch.randn(3, 5, requires_grad=True))
-    weight.grad
+
+
+def grad_set_test():
+    w = torch.tensor([1.0], requires_grad=True)
+    x = torch.tensor([2.0], requires_grad=True)
+    a = torch.add(w, x)
+    b = torch.add(w, 1)
+    y = torch.mul(a, b)
+
+    a.retain_grad()
+
+    y.backward()
+    print(w.grad, w.is_leaf)
+    print(a.grad, a.is_leaf)
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    grad_set_test()
