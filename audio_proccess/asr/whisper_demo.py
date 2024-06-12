@@ -2,7 +2,9 @@ import whisper
 
 
 def main():
-    audio_path = "/Users/cxq/code/py_cloud/data/audio_mp3/h1.mp3"
+    # audio_path = "/Users/cxq/code/py_cloud/data/audio_mp3/h1.mp3"
+    audio_path = "/Users/cxq/code/py_cloud/data/audio_mp3/en_test.mp3"
+    # audio_path = "/Users/cxq/code/py_cloud/data/audio_mp3/hokkien_test2.mp3"
     model = whisper.load_model("base")  # ~/.cache/whisper/
     result = model.transcribe(audio_path)
     print(result["text"])
