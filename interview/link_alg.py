@@ -268,5 +268,37 @@ def _test_find_intersection_node():
         print(None)
 
 
+def is_palindrome_link_list(head: Node) -> bool:
+    if not head:
+        return False
+    if not head.next:
+        return True
+
+    slow = head
+    fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    last_link_reverse = reverse_link(slow.next)
+    start = head
+    end = last_link_reverse
+    while end:
+        if start.value != end.value:
+            return False
+        start = start.next
+        end = end.next
+    return True
+
+
+def _test_is_palindrome_link_list():
+    arr1 = [1, 2, 2, 1]
+    head1 = creat_link(arr1)
+    print(is_palindrome_link_list(head1))
+    arr2 = [1, 2, 3, 4]
+    head2 = creat_link(arr2)
+    print(is_palindrome_link_list(head2))
+
+
 if __name__ == '__main__':
-    _test_find_intersection_node()
+    _test_is_palindrome_link_list()
