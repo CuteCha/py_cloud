@@ -42,10 +42,24 @@ def cal_max_sum_ret(arr):
     return cur_ret
 
 
+def buy_sell(arr: list[int]) -> int:
+    buy = max(arr)
+    profit = 0
+
+    for sell in arr:
+        if sell < buy:
+            buy = sell
+        else:
+            profit = max(profit, sell - buy)
+
+    return profit
+
+
 def main():
     arr = [2, 2, 6, 2, 1, 9, 3]
     print(cal_max_ret(arr))
     print(cal_max_sum_ret(arr))
+    print(buy_sell(arr))
 
 
 if __name__ == '__main__':
